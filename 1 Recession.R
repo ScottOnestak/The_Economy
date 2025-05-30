@@ -7,6 +7,7 @@ library(dplyr)
 library(tidyr)
 library(fredr)
 library(h2o)
+library(lubridate)
 
 options(scipen=999)
 
@@ -24,18 +25,18 @@ tres_30y = fredr(series_id = "DGS30",
 tres_20y = fredr(series_id = "DGS20",
                  observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
                  frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(tres_20y=value)
-  
+
 tres_10y = fredr(series_id = "DGS10",
                  observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
                  frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(tres_10y=value)  
-  
+
 tres_5y = fredr(series_id = "DGS5",
-                 observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
-                 frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(tres_5y=value)  
+                observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
+                frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(tres_5y=value)  
 
 tres_2y = fredr(series_id = "DGS2",
-                 observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
-                 frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(tres_2y=value)  
+                observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
+                frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(tres_2y=value)  
 
 tres_1y = fredr(series_id = "DGS1",
                 observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
@@ -56,7 +57,7 @@ tres_1m = fredr(series_id = "DGS1MO",
 sentiment = fredr(series_id = "UMCSENT",
                   observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
                   frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(sentiment=value) 
-  
+
 lfpr = fredr(series_id = "CIVPART",
              observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
              frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(lfpr=value) 
@@ -64,7 +65,7 @@ lfpr = fredr(series_id = "CIVPART",
 production = fredr(series_id = "INDPRO",
                    observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
                    frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(production=value)
-  
+
 fed_funds = fredr(series_id = "DFF",
                   observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
                   frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(fed_funds=value)
@@ -72,7 +73,7 @@ fed_funds = fredr(series_id = "DFF",
 m2 = fredr(series_id = "M2SL",
            observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
            frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(m2=value)
-  
+
 GDP = fredr(series_id = "GDP",
             observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
             frequency = "q") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(GDP=value)
@@ -84,15 +85,15 @@ initial_claims = fredr(series_id = "ICSA",
 leverage = fredr(series_id = "NFCILEVERAGE",
                  observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
                  frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(leverage_index=value)
-  
+
 credit = fredr(series_id = "NFCICREDIT",
                observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
                frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(credit_index=value)
-  
+
 risk = fredr(series_id = "NFCIRISK",
              observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
              frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(risk_index=value)
-  
+
 recession = fredr(series_id = "USREC",
                   observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
                   frequency = "m") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(recession=value)
@@ -100,91 +101,152 @@ recession = fredr(series_id = "USREC",
 tres_30y_c = unlist(fredr(series_id = "DGS30",
                           observation_start = as.Date(as.character(Sys.Date()-5),format="%Y-%m-%d"),
                           frequency = "d") %>% select(date,value) %>% filter(!is.na(value)) %>%
-                          filter(date == max(date)) %>% select(value))
+                      filter(date == max(date)) %>% select(value))
 
 tres_20y_c = unlist(fredr(series_id = "DGS20",
                           observation_start = as.Date(as.character(Sys.Date()-5),format="%Y-%m-%d"),
                           frequency = "d") %>% select(date,value) %>% filter(!is.na(value)) %>%
-                          filter(date == max(date)) %>% select(value))
+                      filter(date == max(date)) %>% select(value))
 
 tres_10y_c = unlist(fredr(series_id = "DGS10",
                           observation_start = as.Date(as.character(Sys.Date()-5),format="%Y-%m-%d"),
                           frequency = "d") %>% select(date,value) %>% filter(!is.na(value)) %>%
-                          filter(date == max(date)) %>% select(value))  
+                      filter(date == max(date)) %>% select(value))  
 
 tres_5y_c = unlist(fredr(series_id = "DGS5",
                          observation_start = as.Date(as.character(Sys.Date()-5),format="%Y-%m-%d"),
                          frequency = "d") %>% select(date,value) %>% filter(!is.na(value)) %>%
-                         filter(date == max(date)) %>% select(value))  
+                     filter(date == max(date)) %>% select(value))  
 
 tres_2y_c = unlist(fredr(series_id = "DGS2",
                          observation_start = as.Date(as.character(Sys.Date()-5),format="%Y-%m-%d"),
                          frequency = "d") %>% select(date,value) %>% filter(!is.na(value)) %>%
-                         filter(date == max(date)) %>% select(value)) 
+                     filter(date == max(date)) %>% select(value)) 
 
 tres_1y_c = unlist(fredr(series_id = "DGS1",
-                       observation_start = as.Date(as.character(Sys.Date()-5),format="%Y-%m-%d"),
-                       frequency = "d") %>% select(date,value) %>%
-                       filter(date == max(date)) %>% select(value))  
+                         observation_start = as.Date(as.character(Sys.Date()-5),format="%Y-%m-%d"),
+                         frequency = "d") %>% select(date,value) %>%
+                     filter(date == max(date)) %>% select(value))  
 
 tres_6m_c = unlist(fredr(series_id = "DGS6MO",
                          observation_start = as.Date(as.character(Sys.Date()-5),format="%Y-%m-%d"),
                          frequency = "d") %>% select(date,value) %>% filter(!is.na(value)) %>%
-                         filter(date == max(date)) %>% select(value))
+                     filter(date == max(date)) %>% select(value))
 
 tres_3m_c = unlist(fredr(series_id = "DGS3MO",
                          observation_start = as.Date(as.character(Sys.Date()-5),format="%Y-%m-%d"),
                          frequency = "d") %>% select(date,value) %>% filter(!is.na(value)) %>%
-                         filter(date == max(date)) %>% select(value))
+                     filter(date == max(date)) %>% select(value))
 
 tres_1m_c = unlist(fredr(series_id = "DGS1MO",
                          observation_start = as.Date(as.character(Sys.Date()-5),format="%Y-%m-%d"),
                          frequency = "d") %>% select(date,value) %>% filter(!is.na(value)) %>%
-                         filter(date == max(date)) %>% select(value))
+                     filter(date == max(date)) %>% select(value))
 
 fed_funds_c = unlist(fredr(series_id = "DFF",
                            observation_start = as.Date(as.character(Sys.Date()-5),format="%Y-%m-%d"),
                            frequency = "d") %>% select(date,value) %>% filter(!is.na(value)) %>%
-                           filter(date == max(date)) %>% select(value))
+                       filter(date == max(date)) %>% select(value))
 
 leverage_index_c = unlist(fredr(series_id = "NFCILEVERAGE",
                                 observation_start = as.Date(as.character(Sys.Date()-14),format="%Y-%m-%d"),
                                 frequency = "w") %>% select(date,value) %>% filter(!is.na(value)) %>%
-                                filter(date == max(date)) %>% select(value))
+                            filter(date == max(date)) %>% select(value))
 
 credit_index_c = unlist(fredr(series_id = "NFCICREDIT",
                               observation_start = as.Date(as.character(Sys.Date()-14),format="%Y-%m-%d"),
                               frequency = "w") %>% select(date,value) %>% filter(!is.na(value)) %>%
-                              filter(date == max(date)) %>% select(value))
+                          filter(date == max(date)) %>% select(value))
 
 risk_index_c = unlist(fredr(series_id = "NFCIRISK",
                             observation_start = as.Date(as.character(Sys.Date()-14),format="%Y-%m-%d"),
                             frequency = "w") %>% select(date,value) %>% filter(!is.na(value)) %>%
-                            filter(date == max(date)) %>% select(value))
+                        filter(date == max(date)) %>% select(value))
+
+tres_30y_all = fredr(series_id = "DGS30",
+                     observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
+                     frequency = "d") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(tres_30y=value)
+
+tres_1y_all = fredr(series_id = "DGS1",
+                    observation_start = as.Date("1970-01-01",format="%Y-%m-%d"),
+                    frequency = "d") %>% select(date,value) %>% filter(!is.na(value)) %>% rename(tres_1y=value)
+
+#Create treasury 30 year - 1 year spread data for .csv export
+tres_30y_1yr_spread = tres_30y_all %>% inner_join(.,tres_1y_all,by="date") %>%
+  mutate(tres_30y_1yr_spread = tres_30y - tres_1y,
+         join = paste(substr(date,1,8),"01",sep="")) %>%
+  left_join(.,recession %>% mutate(join = as.character(date)) %>% select(-date),by="join") %>%
+  select(-join) %>%
+  mutate(recession = ifelse(is.na(recession),0,recession))
+write.csv(tres_30y_1yr_spread,"Data/Recession Probability/tres_30y_1yr_spread.csv",row.names=F)
+
+#Create current yield curve dataset
+yield_curve = as.data.frame(cbind(c(1,3,6,12,24,60,120,240,360),
+                                  c(tres_1m_c,tres_3m_c,tres_6m_c,tres_1y_c,tres_2y_c,tres_5y_c,
+                                    tres_10y_c,tres_20y_c,tres_30y_c),
+                                  c(unlist(tres_1m %>% filter(date==floor_date(Sys.Date(),"month") - months(3)) %>% select(tres_1m)),
+                                    unlist(tres_3m %>% filter(date==floor_date(Sys.Date(),"month") - months(3)) %>% select(tres_3m)),
+                                    unlist(tres_6m %>% filter(date==floor_date(Sys.Date(),"month") - months(3)) %>% select(tres_6m)),
+                                    unlist(tres_1y %>% filter(date==floor_date(Sys.Date(),"month") - months(3)) %>% select(tres_1y)),
+                                    unlist(tres_2y %>% filter(date==floor_date(Sys.Date(),"month") - months(3)) %>% select(tres_2y)),
+                                    unlist(tres_5y %>% filter(date==floor_date(Sys.Date(),"month") - months(3)) %>% select(tres_5y)),
+                                    unlist(tres_10y %>% filter(date==floor_date(Sys.Date(),"month") - months(3)) %>% select(tres_10y)),
+                                    unlist(tres_20y %>% filter(date==floor_date(Sys.Date(),"month") - months(3)) %>% select(tres_20y)),
+                                    unlist(tres_30y %>% filter(date==floor_date(Sys.Date(),"month") - months(3)) %>% select(tres_30y))),
+                                  c(unlist(tres_1m %>% filter(date==floor_date(Sys.Date(),"month") - months(6)) %>% select(tres_1m)),
+                                    unlist(tres_3m %>% filter(date==floor_date(Sys.Date(),"month") - months(6)) %>% select(tres_3m)),
+                                    unlist(tres_6m %>% filter(date==floor_date(Sys.Date(),"month") - months(6)) %>% select(tres_6m)),
+                                    unlist(tres_1y %>% filter(date==floor_date(Sys.Date(),"month") - months(6)) %>% select(tres_1y)),
+                                    unlist(tres_2y %>% filter(date==floor_date(Sys.Date(),"month") - months(6)) %>% select(tres_2y)),
+                                    unlist(tres_5y %>% filter(date==floor_date(Sys.Date(),"month") - months(6)) %>% select(tres_5y)),
+                                    unlist(tres_10y %>% filter(date==floor_date(Sys.Date(),"month") - months(6)) %>% select(tres_10y)),
+                                    unlist(tres_20y %>% filter(date==floor_date(Sys.Date(),"month") - months(6)) %>% select(tres_20y)),
+                                    unlist(tres_30y %>% filter(date==floor_date(Sys.Date(),"month") - months(6)) %>% select(tres_30y))),
+                                  c(unlist(tres_1m %>% filter(date==floor_date(Sys.Date(),"month") - months(12)) %>% select(tres_1m)),
+                                    unlist(tres_3m %>% filter(date==floor_date(Sys.Date(),"month") - months(12)) %>% select(tres_3m)),
+                                    unlist(tres_6m %>% filter(date==floor_date(Sys.Date(),"month") - months(12)) %>% select(tres_6m)),
+                                    unlist(tres_1y %>% filter(date==floor_date(Sys.Date(),"month") - months(12)) %>% select(tres_1y)),
+                                    unlist(tres_2y %>% filter(date==floor_date(Sys.Date(),"month") - months(12)) %>% select(tres_2y)),
+                                    unlist(tres_5y %>% filter(date==floor_date(Sys.Date(),"month") - months(12)) %>% select(tres_5y)),
+                                    unlist(tres_10y %>% filter(date==floor_date(Sys.Date(),"month") - months(12)) %>% select(tres_10y)),
+                                    unlist(tres_20y %>% filter(date==floor_date(Sys.Date(),"month") - months(12)) %>% select(tres_20y)),
+                                    unlist(tres_30y %>% filter(date==floor_date(Sys.Date(),"month") - months(12)) %>% select(tres_30y))),
+                                  c(unlist(tres_1m %>% filter(date==floor_date(Sys.Date(),"month") - months(24)) %>% select(tres_1m)),
+                                    unlist(tres_3m %>% filter(date==floor_date(Sys.Date(),"month") - months(24)) %>% select(tres_3m)),
+                                    unlist(tres_6m %>% filter(date==floor_date(Sys.Date(),"month") - months(24)) %>% select(tres_6m)),
+                                    unlist(tres_1y %>% filter(date==floor_date(Sys.Date(),"month") - months(24)) %>% select(tres_1y)),
+                                    unlist(tres_2y %>% filter(date==floor_date(Sys.Date(),"month") - months(24)) %>% select(tres_2y)),
+                                    unlist(tres_5y %>% filter(date==floor_date(Sys.Date(),"month") - months(24)) %>% select(tres_5y)),
+                                    unlist(tres_10y %>% filter(date==floor_date(Sys.Date(),"month") - months(24)) %>% select(tres_10y)),
+                                    unlist(tres_20y %>% filter(date==floor_date(Sys.Date(),"month") - months(24)) %>% select(tres_20y)),
+                                    unlist(tres_30y %>% filter(date==floor_date(Sys.Date(),"month") - months(24)) %>% select(tres_30y)))))
+colnames(yield_curve) = c("Bond Duration (in Months)","Current Yield","Yield 3 Months Previous","Yield 6 Months Previous",
+                          "Yield 1 Year Previous","Yield 2 Years Previous")
+write.csv(yield_curve,"Data/Recession Probability/yield_curve.csv",row.names=F)
 
 #Join together to build dataset
 theData = unemployment %>%
-            left_join(.,tres_30y,by="date") %>%
-            left_join(.,tres_20y,by="date") %>%
-            left_join(.,tres_10y,by="date") %>%
-            left_join(.,tres_5y,by="date") %>%
-            left_join(.,tres_2y,by="date") %>%
-            left_join(.,tres_1y,by="date") %>%
-            left_join(.,tres_6m,by="date") %>%
-            left_join(.,tres_3m,by="date") %>%
-            left_join(.,tres_1m,by="date") %>%
-            left_join(.,sentiment,by="date") %>%
-            left_join(.,lfpr,by="date") %>%
-            left_join(.,production,by="date") %>%
-            left_join(.,fed_funds,by="date") %>%
-            left_join(.,m2,by="date") %>%
-            left_join(.,GDP,by="date") %>%
-            left_join(.,initial_claims,by="date") %>%
-            left_join(.,leverage,by="date") %>%
-            left_join(.,credit,by="date") %>%
-            left_join(.,risk,by="date") %>%
-            left_join(.,recession,by="date") %>%
-            arrange(date)
+  left_join(.,tres_30y,by="date") %>%
+  left_join(.,tres_20y,by="date") %>%
+  left_join(.,tres_10y,by="date") %>%
+  left_join(.,tres_5y,by="date") %>%
+  left_join(.,tres_2y,by="date") %>%
+  left_join(.,tres_1y,by="date") %>%
+  left_join(.,tres_6m,by="date") %>%
+  left_join(.,tres_3m,by="date") %>%
+  left_join(.,tres_1m,by="date") %>%
+  left_join(.,sentiment,by="date") %>%
+  left_join(.,lfpr,by="date") %>%
+  left_join(.,production,by="date") %>%
+  left_join(.,fed_funds,by="date") %>%
+  left_join(.,m2,by="date") %>%
+  left_join(.,GDP,by="date") %>%
+  left_join(.,initial_claims,by="date") %>%
+  left_join(.,leverage,by="date") %>%
+  left_join(.,credit,by="date") %>%
+  left_join(.,risk,by="date") %>%
+  left_join(.,recession,by="date") %>%
+  arrange(date)
 
 #Fill in GDP since it's monthly and sentiment when it was quarterly
 GDP_temp = NA
@@ -231,44 +293,44 @@ theData$time = as.numeric(row.names(theData))
 
 #Build recession dependent variable time periods
 recession_3m = theData %>% select(time) %>% mutate(time_max = time + 3) %>% rename(time_min = time) %>%
-                           full_join(.,theData %>% select(time,recession),by=character()) %>%
-                           filter(time > time_min & time <= time_max) %>%
-                           group_by(time_min) %>%
-                           summarise(recession = max(recession),
-                                     count = n()) %>%
-                           filter(count >= 3) %>%
-                           select(time_min,recession) %>%
-                           rename(time = time_min, recession_3m = recession)
-                           
+  full_join(.,theData %>% select(time,recession),by=character()) %>%
+  filter(time > time_min & time <= time_max) %>%
+  group_by(time_min) %>%
+  summarise(recession = max(recession),
+            count = n()) %>%
+  filter(count >= 3) %>%
+  select(time_min,recession) %>%
+  rename(time = time_min, recession_3m = recession)
+
 recession_6m = theData %>% select(time) %>% mutate(time_max = time + 6) %>% rename(time_min = time) %>%
-                           full_join(.,theData %>% select(time,recession),by=character()) %>%
-                           filter(time > time_min & time <= time_max) %>%
-                           group_by(time_min) %>%
-                           summarise(recession = max(recession),
-                                     count = n()) %>%
-                           filter(count >= 6) %>%
-                           select(time_min,recession) %>%
-                           rename(time = time_min, recession_6m = recession)
+  full_join(.,theData %>% select(time,recession),by=character()) %>%
+  filter(time > time_min & time <= time_max) %>%
+  group_by(time_min) %>%
+  summarise(recession = max(recession),
+            count = n()) %>%
+  filter(count >= 6) %>%
+  select(time_min,recession) %>%
+  rename(time = time_min, recession_6m = recession)
 
 recession_12m = theData %>% select(time) %>% mutate(time_max = time + 12) %>% rename(time_min = time) %>%
-                            full_join(.,theData %>% select(time,recession),by=character()) %>%
-                            filter(time > time_min & time <= time_max) %>%
-                            group_by(time_min) %>%
-                            summarise(recession = max(recession),
-                                      count = n()) %>%
-                            filter(count >= 12) %>%
-                            select(time_min,recession) %>%
-                            rename(time = time_min, recession_12m = recession)
+  full_join(.,theData %>% select(time,recession),by=character()) %>%
+  filter(time > time_min & time <= time_max) %>%
+  group_by(time_min) %>%
+  summarise(recession = max(recession),
+            count = n()) %>%
+  filter(count >= 12) %>%
+  select(time_min,recession) %>%
+  rename(time = time_min, recession_12m = recession)
 
 recession_18m = theData %>% select(time) %>% mutate(time_max = time + 18) %>% rename(time_min = time) %>%
-                            full_join(.,theData %>% select(time,recession),by=character()) %>%
-                            filter(time > time_min & time <= time_max) %>%
-                            group_by(time_min) %>%
-                            summarise(recession = max(recession),
-                                      count = n()) %>%
-                            filter(count >= 18) %>%
-                            select(time_min,recession) %>%
-                            rename(time = time_min, recession_18m = recession)
+  full_join(.,theData %>% select(time,recession),by=character()) %>%
+  filter(time > time_min & time <= time_max) %>%
+  group_by(time_min) %>%
+  summarise(recession = max(recession),
+            count = n()) %>%
+  filter(count >= 18) %>%
+  select(time_min,recession) %>%
+  rename(time = time_min, recession_18m = recession)
 
 #Build additional variables
 theData = theData %>% mutate(tres_30y_20y_spread = tres_30y - tres_20y,
@@ -310,579 +372,579 @@ theData = theData %>% mutate(tres_30y_20y_spread = tres_30y - tres_20y,
                              m2_velocity = GDP / m2)
 
 theData = theData %>% left_join(.,theData %>% 
-                               select(time,unemployment) %>% 
-                               mutate(time = time + 3) %>% 
-                               rename(unemployment3 = unemployment),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,unemployment) %>% 
-                               mutate(time = time + 6) %>% 
-                               rename(unemployment6 = unemployment),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,unemployment) %>% 
-                               mutate(time = time + 12) %>% 
-                               rename(unemployment12 = unemployment),by="time") %>%
-                   left_join(.,theData %>% select(time,tres_30y_20y_spread,tres_30y_10y_spread,tres_30y_5y_spread,
-                                                  tres_30y_2y_spread,tres_30y_1y_spread,tres_30y_6m_spread,
-                                                  tres_30y_3m_spread,tres_30y_1m_spread,tres_20y_10y_spread,
-                                                  tres_20y_5y_spread,tres_20y_2y_spread,tres_20y_1y_spread,
-                                                  tres_20y_6m_spread,tres_20y_3m_spread,tres_20y_1m_spread,
-                                                  tres_10y_5y_spread,tres_10y_2y_spread,tres_10y_1y_spread,
-                                                  tres_10y_6m_spread,tres_10y_3m_spread,tres_10y_1m_spread,
-                                                  tres_5y_2y_spread,tres_5y_1y_spread,tres_5y_6m_spread,
-                                                  tres_5y_3m_spread,tres_5y_1m_spread,tres_2y_1y_spread,
-                                                  tres_2y_6m_spread,tres_2y_3m_spread,tres_2y_1m_spread,
-                                                  tres_1y_6m_spread,tres_1y_3m_spread,tres_1y_1m_spread,
-                                                  tres_6m_3m_spread,tres_6m_1m_spread,tres_3m_1m_spread,
-                                                  tres_30y,tres_20y,tres_10y,tres_5y,tres_2y,tres_1y,
-                                                  tres_6m,tres_3m,tres_1m) %>%
-                                            mutate(time = time + 3) %>%
-                                            rename(tres_30y_20y_spread_lead_3m = tres_30y_20y_spread,
-                                                   tres_30y_10y_spread_lead_3m = tres_30y_10y_spread,
-                                                   tres_30y_5y_spread_lead_3m = tres_30y_5y_spread,
-                                                   tres_30y_2y_spread_lead_3m = tres_30y_2y_spread,
-                                                   tres_30y_1y_spread_lead_3m = tres_30y_1y_spread,
-                                                   tres_30y_6m_spread_lead_3m = tres_30y_6m_spread,
-                                                   tres_30y_3m_spread_lead_3m = tres_30y_3m_spread,
-                                                   tres_30y_1m_spread_lead_3m = tres_30y_1m_spread,
-                                                   tres_20y_10y_spread_lead_3m = tres_20y_10y_spread,
-                                                   tres_20y_5y_spread_lead_3m = tres_20y_5y_spread,
-                                                   tres_20y_2y_spread_lead_3m = tres_20y_2y_spread,
-                                                   tres_20y_1y_spread_lead_3m = tres_20y_1y_spread,
-                                                   tres_20y_6m_spread_lead_3m = tres_20y_6m_spread,
-                                                   tres_20y_3m_spread_lead_3m = tres_20y_3m_spread,
-                                                   tres_20y_1m_spread_lead_3m = tres_20y_1m_spread,
-                                                   tres_10y_5y_spread_lead_3m = tres_10y_5y_spread,
-                                                   tres_10y_2y_spread_lead_3m = tres_10y_2y_spread,
-                                                   tres_10y_1y_spread_lead_3m = tres_10y_1y_spread,
-                                                   tres_10y_6m_spread_lead_3m = tres_10y_6m_spread,
-                                                   tres_10y_3m_spread_lead_3m = tres_10y_3m_spread,
-                                                   tres_10y_1m_spread_lead_3m = tres_10y_1m_spread,
-                                                   tres_5y_2y_spread_lead_3m = tres_5y_2y_spread,
-                                                   tres_5y_1y_spread_lead_3m = tres_5y_1y_spread,
-                                                   tres_5y_6m_spread_lead_3m = tres_5y_6m_spread,
-                                                   tres_5y_3m_spread_lead_3m = tres_5y_3m_spread,
-                                                   tres_5y_1m_spread_lead_3m = tres_5y_1m_spread,
-                                                   tres_2y_1y_spread_lead_3m = tres_2y_1y_spread,
-                                                   tres_2y_6m_spread_lead_3m = tres_2y_6m_spread,
-                                                   tres_2y_3m_spread_lead_3m = tres_2y_3m_spread,
-                                                   tres_2y_1m_spread_lead_3m = tres_2y_1m_spread,
-                                                   tres_1y_6m_spread_lead_3m = tres_1y_6m_spread,
-                                                   tres_1y_3m_spread_lead_3m = tres_1y_3m_spread,
-                                                   tres_1y_1m_spread_lead_3m = tres_1y_1m_spread,
-                                                   tres_6m_3m_spread_lead_3m = tres_6m_3m_spread,
-                                                   tres_6m_1m_spread_lead_3m = tres_6m_1m_spread,
-                                                   tres_3m_1m_spread_lead_3m = tres_3m_1m_spread,
-                                                   tres_30y_lead3 = tres_30y, tres_20y_lead3 = tres_20y,
-                                                   tres_10y_lead3 = tres_10y, tres_5y_lead3 = tres_5y,
-                                                   tres_2y_lead3 = tres_2y, tres_1y_lead3 = tres_1y,
-                                                   tres_6m_lead3 = tres_6m, tres_3m_lead3 = tres_3m,
-                                                   tres_1m_lead3 = tres_1m),by="time") %>%
-                  left_join(.,theData %>% select(time,tres_30y_20y_spread,tres_30y_10y_spread,tres_30y_5y_spread,
-                                                 tres_30y_2y_spread,tres_30y_1y_spread,tres_30y_6m_spread,
-                                                 tres_30y_3m_spread,tres_30y_1m_spread,tres_20y_10y_spread,
-                                                 tres_20y_5y_spread,tres_20y_2y_spread,tres_20y_1y_spread,
-                                                 tres_20y_6m_spread,tres_20y_3m_spread,tres_20y_1m_spread,
-                                                 tres_10y_5y_spread,tres_10y_2y_spread,tres_10y_1y_spread,
-                                                 tres_10y_6m_spread,tres_10y_3m_spread,tres_10y_1m_spread,
-                                                 tres_5y_2y_spread,tres_5y_1y_spread,tres_5y_6m_spread,
-                                                 tres_5y_3m_spread,tres_5y_1m_spread,tres_2y_1y_spread,
-                                                 tres_2y_6m_spread,tres_2y_3m_spread,tres_2y_1m_spread,
-                                                 tres_1y_6m_spread,tres_1y_3m_spread,tres_1y_1m_spread,
-                                                 tres_6m_3m_spread,tres_6m_1m_spread,tres_3m_1m_spread,
-                                                 tres_30y,tres_20y,tres_10y,tres_5y,tres_2y,tres_1y,
-                                                 tres_6m,tres_3m,tres_1m) %>%
-                                          mutate(time = time + 6) %>%
-                                          rename(tres_30y_20y_spread_lead_6m = tres_30y_20y_spread,
-                                                 tres_30y_10y_spread_lead_6m = tres_30y_10y_spread,
-                                                 tres_30y_5y_spread_lead_6m = tres_30y_5y_spread,
-                                                 tres_30y_2y_spread_lead_6m = tres_30y_2y_spread,
-                                                 tres_30y_1y_spread_lead_6m = tres_30y_1y_spread,
-                                                 tres_30y_6m_spread_lead_6m = tres_30y_6m_spread,
-                                                 tres_30y_3m_spread_lead_6m = tres_30y_3m_spread,
-                                                 tres_30y_1m_spread_lead_6m = tres_30y_1m_spread,
-                                                 tres_20y_10y_spread_lead_6m = tres_20y_10y_spread,
-                                                 tres_20y_5y_spread_lead_6m = tres_20y_5y_spread,
-                                                 tres_20y_2y_spread_lead_6m = tres_20y_2y_spread,
-                                                 tres_20y_1y_spread_lead_6m = tres_20y_1y_spread,
-                                                 tres_20y_6m_spread_lead_6m = tres_20y_6m_spread,
-                                                 tres_20y_3m_spread_lead_6m = tres_20y_3m_spread,
-                                                 tres_20y_1m_spread_lead_6m = tres_20y_1m_spread,
-                                                 tres_10y_5y_spread_lead_6m = tres_10y_5y_spread,
-                                                 tres_10y_2y_spread_lead_6m = tres_10y_2y_spread,
-                                                 tres_10y_1y_spread_lead_6m = tres_10y_1y_spread,
-                                                 tres_10y_6m_spread_lead_6m = tres_10y_6m_spread,
-                                                 tres_10y_3m_spread_lead_6m = tres_10y_3m_spread,
-                                                 tres_10y_1m_spread_lead_6m = tres_10y_1m_spread,
-                                                 tres_5y_2y_spread_lead_6m = tres_5y_2y_spread,
-                                                 tres_5y_1y_spread_lead_6m = tres_5y_1y_spread,
-                                                 tres_5y_6m_spread_lead_6m = tres_5y_6m_spread,
-                                                 tres_5y_3m_spread_lead_6m = tres_5y_3m_spread,
-                                                 tres_5y_1m_spread_lead_6m = tres_5y_1m_spread,
-                                                 tres_2y_1y_spread_lead_6m = tres_2y_1y_spread,
-                                                 tres_2y_6m_spread_lead_6m = tres_2y_6m_spread,
-                                                 tres_2y_3m_spread_lead_6m = tres_2y_3m_spread,
-                                                 tres_2y_1m_spread_lead_6m = tres_2y_1m_spread,
-                                                 tres_1y_6m_spread_lead_6m = tres_1y_6m_spread,
-                                                 tres_1y_3m_spread_lead_6m = tres_1y_3m_spread,
-                                                 tres_1y_1m_spread_lead_6m = tres_1y_1m_spread,
-                                                 tres_6m_3m_spread_lead_6m = tres_6m_3m_spread,
-                                                 tres_6m_1m_spread_lead_6m = tres_6m_1m_spread,
-                                                 tres_3m_1m_spread_lead_6m = tres_3m_1m_spread,
-                                                 tres_30y_lead6 = tres_30y, tres_20y_lead6 = tres_20y,
-                                                 tres_10y_lead6 = tres_10y, tres_5y_lead6 = tres_5y,
-                                                 tres_2y_lead6 = tres_2y, tres_1y_lead6 = tres_1y,
-                                                 tres_6m_lead6 = tres_6m, tres_3m_lead6 = tres_3m,
-                                                 tres_1m_lead6 = tres_1m),by="time") %>%
-                  left_join(.,theData %>% select(time,tres_30y_20y_spread,tres_30y_10y_spread,tres_30y_5y_spread,
-                                                 tres_30y_2y_spread,tres_30y_1y_spread,tres_30y_6m_spread,
-                                                 tres_30y_3m_spread,tres_30y_1m_spread,tres_20y_10y_spread,
-                                                 tres_20y_5y_spread,tres_20y_2y_spread,tres_20y_1y_spread,
-                                                 tres_20y_6m_spread,tres_20y_3m_spread,tres_20y_1m_spread,
-                                                 tres_10y_5y_spread,tres_10y_2y_spread,tres_10y_1y_spread,
-                                                 tres_10y_6m_spread,tres_10y_3m_spread,tres_10y_1m_spread,
-                                                 tres_5y_2y_spread,tres_5y_1y_spread,tres_5y_6m_spread,
-                                                 tres_5y_3m_spread,tres_5y_1m_spread,tres_2y_1y_spread,
-                                                 tres_2y_6m_spread,tres_2y_3m_spread,tres_2y_1m_spread,
-                                                 tres_1y_6m_spread,tres_1y_3m_spread,tres_1y_1m_spread,
-                                                 tres_6m_3m_spread,tres_6m_1m_spread,tres_3m_1m_spread,
-                                                 tres_30y,tres_20y,tres_10y,tres_5y,tres_2y,tres_1y,
-                                                 tres_6m,tres_3m,tres_1m) %>%
-                                          mutate(time = time + 12) %>%
-                                          rename(tres_30y_20y_spread_lead_12m = tres_30y_20y_spread,
-                                                 tres_30y_10y_spread_lead_12m = tres_30y_10y_spread,
-                                                 tres_30y_5y_spread_lead_12m = tres_30y_5y_spread,
-                                                 tres_30y_2y_spread_lead_12m = tres_30y_2y_spread,
-                                                 tres_30y_1y_spread_lead_12m = tres_30y_1y_spread,
-                                                 tres_30y_6m_spread_lead_12m = tres_30y_6m_spread,
-                                                 tres_30y_3m_spread_lead_12m = tres_30y_3m_spread,
-                                                 tres_30y_1m_spread_lead_12m = tres_30y_1m_spread,
-                                                 tres_20y_10y_spread_lead_12m = tres_20y_10y_spread,
-                                                 tres_20y_5y_spread_lead_12m = tres_20y_5y_spread,
-                                                 tres_20y_2y_spread_lead_12m = tres_20y_2y_spread,
-                                                 tres_20y_1y_spread_lead_12m = tres_20y_1y_spread,
-                                                 tres_20y_6m_spread_lead_12m = tres_20y_6m_spread,
-                                                 tres_20y_3m_spread_lead_12m = tres_20y_3m_spread,
-                                                 tres_20y_1m_spread_lead_12m = tres_20y_1m_spread,
-                                                 tres_10y_5y_spread_lead_12m = tres_10y_5y_spread,
-                                                 tres_10y_2y_spread_lead_12m = tres_10y_2y_spread,
-                                                 tres_10y_1y_spread_lead_12m = tres_10y_1y_spread,
-                                                 tres_10y_6m_spread_lead_12m = tres_10y_6m_spread,
-                                                 tres_10y_3m_spread_lead_12m = tres_10y_3m_spread,
-                                                 tres_10y_1m_spread_lead_12m = tres_10y_1m_spread,
-                                                 tres_5y_2y_spread_lead_12m = tres_5y_2y_spread,
-                                                 tres_5y_1y_spread_lead_12m = tres_5y_1y_spread,
-                                                 tres_5y_6m_spread_lead_12m = tres_5y_6m_spread,
-                                                 tres_5y_3m_spread_lead_12m = tres_5y_3m_spread,
-                                                 tres_5y_1m_spread_lead_12m = tres_5y_1m_spread,
-                                                 tres_2y_1y_spread_lead_12m = tres_2y_1y_spread,
-                                                 tres_2y_6m_spread_lead_12m = tres_2y_6m_spread,
-                                                 tres_2y_3m_spread_lead_12m = tres_2y_3m_spread,
-                                                 tres_2y_1m_spread_lead_12m = tres_2y_1m_spread,
-                                                 tres_1y_6m_spread_lead_12m = tres_1y_6m_spread,
-                                                 tres_1y_3m_spread_lead_12m = tres_1y_3m_spread,
-                                                 tres_1y_1m_spread_lead_12m = tres_1y_1m_spread,
-                                                 tres_6m_3m_spread_lead_12m = tres_6m_3m_spread,
-                                                 tres_6m_1m_spread_lead_12m = tres_6m_1m_spread,
-                                                 tres_3m_1m_spread_lead_12m = tres_3m_1m_spread,
-                                                 tres_30y_lead12 = tres_30y, tres_20y_lead12 = tres_20y,
-                                                 tres_10y_lead12 = tres_10y, tres_5y_lead12 = tres_5y,
-                                                 tres_2y_lead12 = tres_2y, tres_1y_lead12 = tres_1y,
-                                                 tres_6m_lead12 = tres_6m, tres_3m_lead12 = tres_3m,
-                                                 tres_1m_lead12 = tres_1m),by="time") %>%
-                  left_join(.,theData %>% select(time,tres_30y_20y_spread,tres_30y_10y_spread,tres_30y_5y_spread,
-                                                 tres_30y_2y_spread,tres_30y_1y_spread,tres_30y_6m_spread,
-                                                 tres_30y_3m_spread,tres_30y_1m_spread,tres_20y_10y_spread,
-                                                 tres_20y_5y_spread,tres_20y_2y_spread,tres_20y_1y_spread,
-                                                 tres_20y_6m_spread,tres_20y_3m_spread,tres_20y_1m_spread,
-                                                 tres_10y_5y_spread,tres_10y_2y_spread,tres_10y_1y_spread,
-                                                 tres_10y_6m_spread,tres_10y_3m_spread,tres_10y_1m_spread,
-                                                 tres_5y_2y_spread,tres_5y_1y_spread,tres_5y_6m_spread,
-                                                 tres_5y_3m_spread,tres_5y_1m_spread,tres_2y_1y_spread,
-                                                 tres_2y_6m_spread,tres_2y_3m_spread,tres_2y_1m_spread,
-                                                 tres_1y_6m_spread,tres_1y_3m_spread,tres_1y_1m_spread,
-                                                 tres_6m_3m_spread,tres_6m_1m_spread,tres_3m_1m_spread,
-                                                 tres_30y,tres_20y,tres_10y,tres_5y,tres_2y,tres_1y,
-                                                 tres_6m,tres_3m,tres_1m) %>%
-                                          mutate(time = time + 18) %>%
-                                          rename(tres_30y_20y_spread_lead_18m = tres_30y_20y_spread,
-                                                 tres_30y_10y_spread_lead_18m = tres_30y_10y_spread,
-                                                 tres_30y_5y_spread_lead_18m = tres_30y_5y_spread,
-                                                 tres_30y_2y_spread_lead_18m = tres_30y_2y_spread,
-                                                 tres_30y_1y_spread_lead_18m = tres_30y_1y_spread,
-                                                 tres_30y_6m_spread_lead_18m = tres_30y_6m_spread,
-                                                 tres_30y_3m_spread_lead_18m = tres_30y_3m_spread,
-                                                 tres_30y_1m_spread_lead_18m = tres_30y_1m_spread,
-                                                 tres_20y_10y_spread_lead_18m = tres_20y_10y_spread,
-                                                 tres_20y_5y_spread_lead_18m = tres_20y_5y_spread,
-                                                 tres_20y_2y_spread_lead_18m = tres_20y_2y_spread,
-                                                 tres_20y_1y_spread_lead_18m = tres_20y_1y_spread,
-                                                 tres_20y_6m_spread_lead_18m = tres_20y_6m_spread,
-                                                 tres_20y_3m_spread_lead_18m = tres_20y_3m_spread,
-                                                 tres_20y_1m_spread_lead_18m = tres_20y_1m_spread,
-                                                 tres_10y_5y_spread_lead_18m = tres_10y_5y_spread,
-                                                 tres_10y_2y_spread_lead_18m = tres_10y_2y_spread,
-                                                 tres_10y_1y_spread_lead_18m = tres_10y_1y_spread,
-                                                 tres_10y_6m_spread_lead_18m = tres_10y_6m_spread,
-                                                 tres_10y_3m_spread_lead_18m = tres_10y_3m_spread,
-                                                 tres_10y_1m_spread_lead_18m = tres_10y_1m_spread,
-                                                 tres_5y_2y_spread_lead_18m = tres_5y_2y_spread,
-                                                 tres_5y_1y_spread_lead_18m = tres_5y_1y_spread,
-                                                 tres_5y_6m_spread_lead_18m = tres_5y_6m_spread,
-                                                 tres_5y_3m_spread_lead_18m = tres_5y_3m_spread,
-                                                 tres_5y_1m_spread_lead_18m = tres_5y_1m_spread,
-                                                 tres_2y_1y_spread_lead_18m = tres_2y_1y_spread,
-                                                 tres_2y_6m_spread_lead_18m = tres_2y_6m_spread,
-                                                 tres_2y_3m_spread_lead_18m = tres_2y_3m_spread,
-                                                 tres_2y_1m_spread_lead_18m = tres_2y_1m_spread,
-                                                 tres_1y_6m_spread_lead_18m = tres_1y_6m_spread,
-                                                 tres_1y_3m_spread_lead_18m = tres_1y_3m_spread,
-                                                 tres_1y_1m_spread_lead_18m = tres_1y_1m_spread,
-                                                 tres_6m_3m_spread_lead_18m = tres_6m_3m_spread,
-                                                 tres_6m_1m_spread_lead_18m = tres_6m_1m_spread,
-                                                 tres_3m_1m_spread_lead_18m = tres_3m_1m_spread,
-                                                 tres_30y_lead18 = tres_30y, tres_20y_lead18 = tres_20y,
-                                                 tres_10y_lead18 = tres_10y, tres_5y_lead18 = tres_5y,
-                                                 tres_2y_lead18 = tres_2y, tres_1y_lead18 = tres_1y,
-                                                 tres_6m_lead18 = tres_6m, tres_3m_lead18 = tres_3m,
-                                                 tres_1m_lead18 = tres_1m),by="time") %>%
-                  left_join(.,theData %>% select(time,tres_30y_20y_spread,tres_30y_10y_spread,tres_30y_5y_spread,
-                                                 tres_30y_2y_spread,tres_30y_1y_spread,tres_30y_6m_spread,
-                                                 tres_30y_3m_spread,tres_30y_1m_spread,tres_20y_10y_spread,
-                                                 tres_20y_5y_spread,tres_20y_2y_spread,tres_20y_1y_spread,
-                                                 tres_20y_6m_spread,tres_20y_3m_spread,tres_20y_1m_spread,
-                                                 tres_10y_5y_spread,tres_10y_2y_spread,tres_10y_1y_spread,
-                                                 tres_10y_6m_spread,tres_10y_3m_spread,tres_10y_1m_spread,
-                                                 tres_5y_2y_spread,tres_5y_1y_spread,tres_5y_6m_spread,
-                                                 tres_5y_3m_spread,tres_5y_1m_spread,tres_2y_1y_spread,
-                                                 tres_2y_6m_spread,tres_2y_3m_spread,tres_2y_1m_spread,
-                                                 tres_1y_6m_spread,tres_1y_3m_spread,tres_1y_1m_spread,
-                                                 tres_6m_3m_spread,tres_6m_1m_spread,tres_3m_1m_spread,
-                                                 tres_30y,tres_20y,tres_10y,tres_5y,tres_2y,tres_1y,
-                                                 tres_6m,tres_3m,tres_1m) %>%
-                                          mutate(time = time + 24) %>%
-                                          rename(tres_30y_20y_spread_lead_24m = tres_30y_20y_spread,
-                                                 tres_30y_10y_spread_lead_24m = tres_30y_10y_spread,
-                                                 tres_30y_5y_spread_lead_24m = tres_30y_5y_spread,
-                                                 tres_30y_2y_spread_lead_24m = tres_30y_2y_spread,
-                                                 tres_30y_1y_spread_lead_24m = tres_30y_1y_spread,
-                                                 tres_30y_6m_spread_lead_24m = tres_30y_6m_spread,
-                                                 tres_30y_3m_spread_lead_24m = tres_30y_3m_spread,
-                                                 tres_30y_1m_spread_lead_24m = tres_30y_1m_spread,
-                                                 tres_20y_10y_spread_lead_24m = tres_20y_10y_spread,
-                                                 tres_20y_5y_spread_lead_24m = tres_20y_5y_spread,
-                                                 tres_20y_2y_spread_lead_24m = tres_20y_2y_spread,
-                                                 tres_20y_1y_spread_lead_24m = tres_20y_1y_spread,
-                                                 tres_20y_6m_spread_lead_24m = tres_20y_6m_spread,
-                                                 tres_20y_3m_spread_lead_24m = tres_20y_3m_spread,
-                                                 tres_20y_1m_spread_lead_24m = tres_20y_1m_spread,
-                                                 tres_10y_5y_spread_lead_24m = tres_10y_5y_spread,
-                                                 tres_10y_2y_spread_lead_24m = tres_10y_2y_spread,
-                                                 tres_10y_1y_spread_lead_24m = tres_10y_1y_spread,
-                                                 tres_10y_6m_spread_lead_24m = tres_10y_6m_spread,
-                                                 tres_10y_3m_spread_lead_24m = tres_10y_3m_spread,
-                                                 tres_10y_1m_spread_lead_24m = tres_10y_1m_spread,
-                                                 tres_5y_2y_spread_lead_24m = tres_5y_2y_spread,
-                                                 tres_5y_1y_spread_lead_24m = tres_5y_1y_spread,
-                                                 tres_5y_6m_spread_lead_24m = tres_5y_6m_spread,
-                                                 tres_5y_3m_spread_lead_24m = tres_5y_3m_spread,
-                                                 tres_5y_1m_spread_lead_24m = tres_5y_1m_spread,
-                                                 tres_2y_1y_spread_lead_24m = tres_2y_1y_spread,
-                                                 tres_2y_6m_spread_lead_24m = tres_2y_6m_spread,
-                                                 tres_2y_3m_spread_lead_24m = tres_2y_3m_spread,
-                                                 tres_2y_1m_spread_lead_24m = tres_2y_1m_spread,
-                                                 tres_1y_6m_spread_lead_24m = tres_1y_6m_spread,
-                                                 tres_1y_3m_spread_lead_24m = tres_1y_3m_spread,
-                                                 tres_1y_1m_spread_lead_24m = tres_1y_1m_spread,
-                                                 tres_6m_3m_spread_lead_24m = tres_6m_3m_spread,
-                                                 tres_6m_1m_spread_lead_24m = tres_6m_1m_spread,
-                                                 tres_3m_1m_spread_lead_24m = tres_3m_1m_spread,
-                                                 tres_30y_lead24 = tres_30y, tres_20y_lead24 = tres_20y,
-                                                 tres_10y_lead24 = tres_10y, tres_5y_lead24 = tres_5y,
-                                                 tres_2y_lead24 = tres_2y, tres_1y_lead24 = tres_1y,
-                                                 tres_6m_lead24 = tres_6m, tres_3m_lead24 = tres_3m,
-                                                 tres_1m_lead24 = tres_1m),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,sentiment) %>% 
-                               mutate(time = time + 3) %>% 
-                               rename(sentiment3 = sentiment),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,sentiment) %>% 
-                               mutate(time = time + 6) %>% 
-                               rename(sentiment6 = sentiment),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,sentiment) %>% 
-                               mutate(time = time + 12) %>% 
-                               rename(sentiment12 = sentiment),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,lfpr) %>% 
-                               mutate(time = time + 3) %>% 
-                               rename(lfpr3 = lfpr),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,lfpr) %>% 
-                               mutate(time = time + 6) %>% 
-                               rename(lfpr6 = lfpr),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,lfpr) %>% 
-                               mutate(time = time + 12) %>% 
-                               rename(lfpr12 = lfpr),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,production) %>% 
-                               mutate(time = time + 3) %>% 
-                               rename(production3 = production),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,production) %>% 
-                               mutate(time = time + 6) %>% 
-                               rename(production6 = production),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,production) %>% 
-                               mutate(time = time + 12) %>% 
-                               rename(production12 = production),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,fed_funds) %>% 
-                               mutate(time = time + 3) %>% 
-                               rename(fed_funds3 = fed_funds),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,fed_funds) %>% 
-                               mutate(time = time + 6) %>% 
-                               rename(fed_funds6 = fed_funds),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,fed_funds) %>% 
-                               mutate(time = time + 12) %>% 
-                               rename(fed_funds12 = fed_funds),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,m2_velocity) %>% 
-                               mutate(time = time + 3) %>% 
-                               rename(m2_velocity3 = m2_velocity),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,m2_velocity) %>% 
-                               mutate(time = time + 6) %>% 
-                               rename(m2_velocity6 = m2_velocity),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,m2_velocity) %>% 
-                               mutate(time = time + 12) %>% 
-                               rename(m2_velocity12 = m2_velocity),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,initial_claims) %>% 
-                               mutate(time = time + 3) %>% 
-                               rename(initial_claims3 = initial_claims),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,initial_claims) %>% 
-                               mutate(time = time + 6) %>% 
-                               rename(initial_claims6 = initial_claims),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,initial_claims) %>% 
-                               mutate(time = time + 12) %>% 
-                               rename(initial_claims12 = initial_claims),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,leverage_index) %>% 
-                               mutate(time = time + 3) %>% 
-                               rename(leverage_index3 = leverage_index),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,leverage_index) %>% 
-                               mutate(time = time + 6) %>% 
-                               rename(leverage_index6 = leverage_index),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,leverage_index) %>% 
-                               mutate(time = time + 12) %>% 
-                               rename(leverage_index12 = leverage_index),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,credit_index) %>% 
-                               mutate(time = time + 3) %>% 
-                               rename(credit_index3 = credit_index),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,credit_index) %>% 
-                               mutate(time = time + 6) %>% 
-                               rename(credit_index6 = credit_index),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,credit_index) %>% 
-                               mutate(time = time + 12) %>% 
-                               rename(credit_index12 = credit_index),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,risk_index) %>% 
-                               mutate(time = time + 3) %>% 
-                               rename(risk_index3 = risk_index),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,risk_index) %>% 
-                               mutate(time = time + 6) %>% 
-                               rename(risk_index6 = risk_index),by="time") %>%
-                   left_join(.,theData %>% 
-                               select(time,risk_index) %>% 
-                               mutate(time = time + 12) %>% 
-                               rename(risk_index12 = risk_index),by="time") %>%
-                   mutate(unemployment_raw_chg_3 = unemployment - unemployment3,
-                          unemployment_prct_chg_3 = (unemployment - unemployment3)/unemployment3,
-                          unemployment_raw_chg_6 = unemployment - unemployment6,
-                          unemployment_prct_chg_6 = (unemployment - unemployment6)/unemployment6,
-                          unemployment_raw_chg_12 = unemployment - unemployment12,
-                          unemployment_prct_chg_12 = (unemployment - unemployment12)/unemployment12,
-                          tres_30y_raw_chg_3 = tres_30y - tres_30y_lead3,
-                          tres_30y_prct_chg_3 = (tres_30y - tres_30y_lead3)/tres_30y_lead3,
-                          tres_30y_raw_chg_6 = tres_30y - tres_30y_lead6,
-                          tres_30y_prct_chg_6 = (tres_30y - tres_30y_lead6)/tres_30y_lead6,
-                          tres_30y_raw_chg_12 = tres_30y - tres_30y_lead12,
-                          tres_30y_prct_chg_12 = (tres_30y - tres_30y_lead12)/tres_30y_lead12,
-                          tres_30y_raw_chg_18 = tres_30y - tres_30y_lead18,
-                          tres_30y_prct_chg_18 = (tres_30y - tres_30y_lead18)/tres_30y_lead18,
-                          tres_30y_raw_chg_24 = tres_30y - tres_30y_lead24,
-                          tres_30y_prct_chg_24 = (tres_30y - tres_30y_lead24)/tres_30y_lead24,
-                          tres_20y_raw_chg_3 = tres_20y - tres_20y_lead3,
-                          tres_20y_prct_chg_3 = (tres_20y - tres_20y_lead3)/tres_20y_lead3,
-                          tres_20y_raw_chg_6 = tres_20y - tres_20y_lead6,
-                          tres_20y_prct_chg_6 = (tres_20y - tres_20y_lead6)/tres_20y_lead6,
-                          tres_20y_raw_chg_12 = tres_20y - tres_20y_lead12,
-                          tres_20y_prct_chg_12 = (tres_20y - tres_20y_lead12)/tres_20y_lead12,
-                          tres_20y_raw_chg_18 = tres_20y - tres_20y_lead18,
-                          tres_20y_prct_chg_18 = (tres_20y - tres_20y_lead18)/tres_20y_lead18,
-                          tres_20y_raw_chg_24 = tres_20y - tres_20y_lead24,
-                          tres_20y_prct_chg_24 = (tres_20y - tres_20y_lead24)/tres_20y_lead24,
-                          tres_10y_raw_chg_3 = tres_10y - tres_10y_lead3,
-                          tres_10y_prct_chg_3 = (tres_10y - tres_10y_lead3)/tres_10y_lead3,
-                          tres_10y_raw_chg_6 = tres_10y - tres_10y_lead6,
-                          tres_10y_prct_chg_6 = (tres_10y - tres_10y_lead6)/tres_10y_lead6,
-                          tres_10y_raw_chg_12 = tres_10y - tres_10y_lead12,
-                          tres_10y_prct_chg_12 = (tres_10y - tres_10y_lead12)/tres_10y_lead12,
-                          tres_10y_raw_chg_18 = tres_10y - tres_10y_lead18,
-                          tres_10y_prct_chg_18 = (tres_10y - tres_10y_lead18)/tres_10y_lead18,
-                          tres_10y_raw_chg_24 = tres_10y - tres_10y_lead24,
-                          tres_10y_prct_chg_24 = (tres_10y - tres_10y_lead24)/tres_10y_lead24,
-                          tres_5y_raw_chg_3 = tres_5y - tres_5y_lead3,
-                          tres_5y_prct_chg_3 = (tres_5y - tres_5y_lead3)/tres_5y_lead3,
-                          tres_5y_raw_chg_6 = tres_5y - tres_5y_lead6,
-                          tres_5y_prct_chg_6 = (tres_5y - tres_5y_lead6)/tres_5y_lead6,
-                          tres_5y_raw_chg_12 = tres_5y - tres_5y_lead12,
-                          tres_5y_prct_chg_12 = (tres_5y - tres_5y_lead12)/tres_5y_lead12,
-                          tres_5y_raw_chg_18 = tres_5y - tres_5y_lead18,
-                          tres_5y_prct_chg_18 = (tres_5y - tres_5y_lead18)/tres_5y_lead18,
-                          tres_5y_raw_chg_24 = tres_5y - tres_5y_lead24,
-                          tres_5y_prct_chg_24 = (tres_5y - tres_5y_lead24)/tres_5y_lead24,
-                          tres_2y_raw_chg_3 = tres_2y - tres_2y_lead3,
-                          tres_2y_prct_chg_3 = (tres_2y - tres_2y_lead3)/tres_2y_lead3,
-                          tres_2y_raw_chg_6 = tres_2y - tres_2y_lead6,
-                          tres_2y_prct_chg_6 = (tres_2y - tres_2y_lead6)/tres_2y_lead6,
-                          tres_2y_raw_chg_12 = tres_2y - tres_2y_lead12,
-                          tres_2y_prct_chg_12 = (tres_2y - tres_2y_lead12)/tres_2y_lead12,
-                          tres_2y_raw_chg_18 = tres_2y - tres_2y_lead18,
-                          tres_2y_prct_chg_18 = (tres_2y - tres_2y_lead18)/tres_2y_lead18,
-                          tres_2y_raw_chg_24 = tres_2y - tres_2y_lead24,
-                          tres_2y_prct_chg_24 = (tres_2y - tres_2y_lead24)/tres_2y_lead24,
-                          tres_1y_raw_chg_3 = tres_1y - tres_1y_lead3,
-                          tres_1y_prct_chg_3 = (tres_1y - tres_1y_lead3)/tres_1y_lead3,
-                          tres_1y_raw_chg_6 = tres_1y - tres_1y_lead6,
-                          tres_1y_prct_chg_6 = (tres_1y - tres_1y_lead6)/tres_1y_lead6,
-                          tres_1y_raw_chg_12 = tres_1y - tres_1y_lead12,
-                          tres_1y_prct_chg_12 = (tres_1y - tres_1y_lead12)/tres_1y_lead12,
-                          tres_1y_raw_chg_18 = tres_1y - tres_1y_lead18,
-                          tres_1y_prct_chg_18 = (tres_1y - tres_1y_lead18)/tres_1y_lead18,
-                          tres_1y_raw_chg_24 = tres_1y - tres_1y_lead24,
-                          tres_1y_prct_chg_24 = (tres_1y - tres_1y_lead24)/tres_1y_lead24,
-                          tres_6m_raw_chg_3 = tres_6m - tres_6m_lead3,
-                          tres_6m_prct_chg_3 = (tres_6m - tres_6m_lead3)/tres_6m_lead3,
-                          tres_6m_raw_chg_6 = tres_6m - tres_6m_lead6,
-                          tres_6m_prct_chg_6 = (tres_6m - tres_6m_lead6)/tres_6m_lead6,
-                          tres_6m_raw_chg_12 = tres_6m - tres_6m_lead12,
-                          tres_6m_prct_chg_12 = (tres_6m - tres_6m_lead12)/tres_6m_lead12,
-                          tres_6m_raw_chg_18 = tres_6m - tres_6m_lead18,
-                          tres_6m_prct_chg_18 = (tres_6m - tres_6m_lead18)/tres_6m_lead18,
-                          tres_6m_raw_chg_24 = tres_6m - tres_6m_lead24,
-                          tres_6m_prct_chg_24 = (tres_6m - tres_6m_lead24)/tres_6m_lead24,
-                          tres_3m_raw_chg_3 = tres_3m - tres_3m_lead3,
-                          tres_3m_prct_chg_3 = (tres_3m - tres_3m_lead3)/tres_3m_lead3,
-                          tres_3m_raw_chg_6 = tres_3m - tres_3m_lead6,
-                          tres_3m_prct_chg_6 = (tres_3m - tres_3m_lead6)/tres_3m_lead6,
-                          tres_3m_raw_chg_12 = tres_3m - tres_3m_lead12,
-                          tres_3m_prct_chg_12 = (tres_3m - tres_3m_lead12)/tres_3m_lead12,
-                          tres_3m_raw_chg_18 = tres_3m - tres_3m_lead18,
-                          tres_3m_prct_chg_18 = (tres_3m - tres_3m_lead18)/tres_3m_lead18,
-                          tres_3m_raw_chg_24 = tres_3m - tres_3m_lead24,
-                          tres_3m_prct_chg_24 = (tres_3m - tres_3m_lead24)/tres_3m_lead24,
-                          tres_1m_raw_chg_3 = tres_1m - tres_1m_lead3,
-                          tres_1m_prct_chg_3 = (tres_1m - tres_1m_lead3)/tres_1m_lead3,
-                          tres_1m_raw_chg_6 = tres_1m - tres_1m_lead6,
-                          tres_1m_prct_chg_6 = (tres_1m - tres_1m_lead6)/tres_1m_lead6,
-                          tres_1m_raw_chg_12 = tres_1m - tres_1m_lead12,
-                          tres_1m_prct_chg_12 = (tres_1m - tres_1m_lead12)/tres_1m_lead12,
-                          tres_1m_raw_chg_18 = tres_1m - tres_1m_lead18,
-                          tres_1m_prct_chg_18 = (tres_1m - tres_1m_lead18)/tres_1m_lead18,
-                          tres_1m_raw_chg_24 = tres_1m - tres_1m_lead24,
-                          tres_1m_prct_chg_24 = (tres_1m - tres_1m_lead24)/tres_1m_lead24,
-                          sentiment_raw_chg_3 = sentiment - sentiment3,
-                          sentiment_prct_chg_3 = (sentiment - sentiment3)/sentiment3,
-                          sentiment_raw_chg_6 = sentiment - sentiment6,
-                          sentiment_prct_chg_6 = (sentiment - sentiment6)/sentiment6,
-                          sentiment_raw_chg_12 = sentiment - sentiment12,
-                          sentiment_prct_chg_12 = (sentiment - sentiment12)/sentiment12,
-                          lfpr_raw_chg_3 = lfpr - lfpr3,
-                          lfpr_prct_chg_3 = (lfpr - lfpr3)/lfpr3,
-                          lfpr_raw_chg_6 = lfpr - lfpr6,
-                          lfpr_prct_chg_6 = (lfpr - lfpr6)/lfpr6,
-                          lfpr_raw_chg_12 = lfpr - lfpr12,
-                          lfpr_prct_chg_12 = (lfpr - lfpr12)/lfpr12,
-                          production_raw_chg_3 = production - production3,
-                          production_prct_chg_3 = (production - production3)/production3,
-                          production_raw_chg_6 = production - production6,
-                          production_prct_chg_6 = (production - production6)/production6,
-                          production_raw_chg_12 = production - production12,
-                          production_prct_chg_12 = (production - production12)/production12,
-                          fed_funds_raw_chg_3 = fed_funds - fed_funds3,
-                          fed_funds_prct_chg_3 = (fed_funds - fed_funds3)/fed_funds3,
-                          fed_funds_raw_chg_6 = fed_funds - fed_funds6,
-                          fed_funds_prct_chg_6 = (fed_funds - fed_funds6)/fed_funds6,
-                          fed_funds_raw_chg_12 = fed_funds - fed_funds12,
-                          fed_funds_prct_chg_12 = (fed_funds - fed_funds12)/fed_funds12,
-                          m2_velocity_raw_chg_3 = m2_velocity - m2_velocity3,
-                          m2_velocity_prct_chg_3 = (m2_velocity - m2_velocity3)/m2_velocity3,
-                          m2_velocity_raw_chg_6 = m2_velocity - m2_velocity6,
-                          m2_velocity_prct_chg_6 = (m2_velocity - m2_velocity6)/m2_velocity6,
-                          m2_velocity_raw_chg_12 = m2_velocity - m2_velocity12,
-                          m2_velocity_prct_chg_12 = (m2_velocity - m2_velocity12)/m2_velocity12,
-                          initial_claims_raw_chg_3 = initial_claims - initial_claims3,
-                          initial_claims_prct_chg_3 = (initial_claims - initial_claims3)/initial_claims3,
-                          initial_claims_raw_chg_6 = initial_claims - initial_claims6,
-                          initial_claims_prct_chg_6 = (initial_claims - initial_claims6)/initial_claims6,
-                          initial_claims_raw_chg_12 = initial_claims - initial_claims12,
-                          initial_claims_prct_chg_12 = (initial_claims - initial_claims12)/initial_claims12,
-                          leverage_index_raw_chg_3 = leverage_index - leverage_index3,
-                          leverage_index_prct_chg_3 = (leverage_index - leverage_index3)/leverage_index3,
-                          leverage_index_raw_chg_6 = leverage_index - leverage_index6,
-                          leverage_index_prct_chg_6 = (leverage_index - leverage_index6)/leverage_index6,
-                          leverage_index_raw_chg_12 = leverage_index - leverage_index12,
-                          leverage_index_prct_chg_12 = (leverage_index - leverage_index12)/leverage_index12,
-                          credit_index_raw_chg_3 = credit_index - credit_index3,
-                          credit_index_prct_chg_3 = (credit_index - credit_index3)/credit_index3,
-                          credit_index_raw_chg_6 = credit_index - credit_index6,
-                          credit_index_prct_chg_6 = (credit_index - credit_index6)/credit_index6,
-                          credit_index_raw_chg_12 = credit_index - credit_index12,
-                          credit_index_prct_chg_12 = (credit_index - credit_index12)/credit_index12,
-                          risk_index_raw_chg_3 = risk_index - risk_index3,
-                          risk_index_prct_chg_3 = (risk_index - risk_index3)/risk_index3,
-                          risk_index_raw_chg_6 = risk_index - risk_index6,
-                          risk_index_prct_chg_6 = (risk_index - risk_index6)/risk_index6,
-                          risk_index_raw_chg_12 = risk_index - risk_index12,
-                          risk_index_prct_chg_12 = (risk_index - risk_index12)/risk_index12) %>%
-                   select(-c("unemployment3","unemployment6","unemployment12",
-                             "tres_30y_lead3","tres_30y_lead6","tres_30y_lead12","tres_30y_lead18","tres_30y_lead24",
-                             "tres_20y_lead3","tres_20y_lead6","tres_20y_lead12","tres_20y_lead18","tres_20y_lead24",
-                             "tres_10y_lead3","tres_10y_lead6","tres_10y_lead12","tres_10y_lead18","tres_10y_lead24",
-                             "tres_5y_lead3","tres_5y_lead6","tres_5y_lead12","tres_5y_lead18","tres_5y_lead24",
-                             "tres_2y_lead3","tres_2y_lead6","tres_2y_lead12","tres_2y_lead18","tres_2y_lead24",
-                             "tres_1y_lead3","tres_1y_lead6","tres_1y_lead12","tres_1y_lead18","tres_1y_lead24",
-                             "tres_6m_lead3","tres_6m_lead6","tres_6m_lead12","tres_6m_lead18","tres_6m_lead24",
-                             "tres_3m_lead3","tres_3m_lead6","tres_3m_lead12","tres_3m_lead18","tres_3m_lead24",
-                             "tres_1m_lead3","tres_1m_lead6","tres_1m_lead12","tres_1m_lead18","tres_1m_lead24",
-                             "sentiment3","sentiment6","sentiment12",
-                             "lfpr3","lfpr6","lfpr12",
-                             "production3","production6","production12",
-                             "fed_funds3","fed_funds6","fed_funds12",
-                             "m2_velocity3","m2_velocity6","m2_velocity12",
-                             "initial_claims3","initial_claims6","initial_claims12",
-                             "leverage_index3","leverage_index6","leverage_index12",
-                             "credit_index3","credit_index6","credit_index12",
-                             "risk_index3","risk_index6","risk_index12")) %>%
-                    left_join(.,recession_3m,by="time") %>%
-                    left_join(.,recession_6m,by="time") %>%
-                    left_join(.,recession_12m,by="time") %>%
-                    left_join(.,recession_18m,by="time") %>%
-                    filter(time >= 78) #Start data in June 1976 when 2-year treasury data starts
+                                  select(time,unemployment) %>% 
+                                  mutate(time = time + 3) %>% 
+                                  rename(unemployment3 = unemployment),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,unemployment) %>% 
+              mutate(time = time + 6) %>% 
+              rename(unemployment6 = unemployment),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,unemployment) %>% 
+              mutate(time = time + 12) %>% 
+              rename(unemployment12 = unemployment),by="time") %>%
+  left_join(.,theData %>% select(time,tres_30y_20y_spread,tres_30y_10y_spread,tres_30y_5y_spread,
+                                 tres_30y_2y_spread,tres_30y_1y_spread,tres_30y_6m_spread,
+                                 tres_30y_3m_spread,tres_30y_1m_spread,tres_20y_10y_spread,
+                                 tres_20y_5y_spread,tres_20y_2y_spread,tres_20y_1y_spread,
+                                 tres_20y_6m_spread,tres_20y_3m_spread,tres_20y_1m_spread,
+                                 tres_10y_5y_spread,tres_10y_2y_spread,tres_10y_1y_spread,
+                                 tres_10y_6m_spread,tres_10y_3m_spread,tres_10y_1m_spread,
+                                 tres_5y_2y_spread,tres_5y_1y_spread,tres_5y_6m_spread,
+                                 tres_5y_3m_spread,tres_5y_1m_spread,tres_2y_1y_spread,
+                                 tres_2y_6m_spread,tres_2y_3m_spread,tres_2y_1m_spread,
+                                 tres_1y_6m_spread,tres_1y_3m_spread,tres_1y_1m_spread,
+                                 tres_6m_3m_spread,tres_6m_1m_spread,tres_3m_1m_spread,
+                                 tres_30y,tres_20y,tres_10y,tres_5y,tres_2y,tres_1y,
+                                 tres_6m,tres_3m,tres_1m) %>%
+              mutate(time = time + 3) %>%
+              rename(tres_30y_20y_spread_lead_3m = tres_30y_20y_spread,
+                     tres_30y_10y_spread_lead_3m = tres_30y_10y_spread,
+                     tres_30y_5y_spread_lead_3m = tres_30y_5y_spread,
+                     tres_30y_2y_spread_lead_3m = tres_30y_2y_spread,
+                     tres_30y_1y_spread_lead_3m = tres_30y_1y_spread,
+                     tres_30y_6m_spread_lead_3m = tres_30y_6m_spread,
+                     tres_30y_3m_spread_lead_3m = tres_30y_3m_spread,
+                     tres_30y_1m_spread_lead_3m = tres_30y_1m_spread,
+                     tres_20y_10y_spread_lead_3m = tres_20y_10y_spread,
+                     tres_20y_5y_spread_lead_3m = tres_20y_5y_spread,
+                     tres_20y_2y_spread_lead_3m = tres_20y_2y_spread,
+                     tres_20y_1y_spread_lead_3m = tres_20y_1y_spread,
+                     tres_20y_6m_spread_lead_3m = tres_20y_6m_spread,
+                     tres_20y_3m_spread_lead_3m = tres_20y_3m_spread,
+                     tres_20y_1m_spread_lead_3m = tres_20y_1m_spread,
+                     tres_10y_5y_spread_lead_3m = tres_10y_5y_spread,
+                     tres_10y_2y_spread_lead_3m = tres_10y_2y_spread,
+                     tres_10y_1y_spread_lead_3m = tres_10y_1y_spread,
+                     tres_10y_6m_spread_lead_3m = tres_10y_6m_spread,
+                     tres_10y_3m_spread_lead_3m = tres_10y_3m_spread,
+                     tres_10y_1m_spread_lead_3m = tres_10y_1m_spread,
+                     tres_5y_2y_spread_lead_3m = tres_5y_2y_spread,
+                     tres_5y_1y_spread_lead_3m = tres_5y_1y_spread,
+                     tres_5y_6m_spread_lead_3m = tres_5y_6m_spread,
+                     tres_5y_3m_spread_lead_3m = tres_5y_3m_spread,
+                     tres_5y_1m_spread_lead_3m = tres_5y_1m_spread,
+                     tres_2y_1y_spread_lead_3m = tres_2y_1y_spread,
+                     tres_2y_6m_spread_lead_3m = tres_2y_6m_spread,
+                     tres_2y_3m_spread_lead_3m = tres_2y_3m_spread,
+                     tres_2y_1m_spread_lead_3m = tres_2y_1m_spread,
+                     tres_1y_6m_spread_lead_3m = tres_1y_6m_spread,
+                     tres_1y_3m_spread_lead_3m = tres_1y_3m_spread,
+                     tres_1y_1m_spread_lead_3m = tres_1y_1m_spread,
+                     tres_6m_3m_spread_lead_3m = tres_6m_3m_spread,
+                     tres_6m_1m_spread_lead_3m = tres_6m_1m_spread,
+                     tres_3m_1m_spread_lead_3m = tres_3m_1m_spread,
+                     tres_30y_lead3 = tres_30y, tres_20y_lead3 = tres_20y,
+                     tres_10y_lead3 = tres_10y, tres_5y_lead3 = tres_5y,
+                     tres_2y_lead3 = tres_2y, tres_1y_lead3 = tres_1y,
+                     tres_6m_lead3 = tres_6m, tres_3m_lead3 = tres_3m,
+                     tres_1m_lead3 = tres_1m),by="time") %>%
+  left_join(.,theData %>% select(time,tres_30y_20y_spread,tres_30y_10y_spread,tres_30y_5y_spread,
+                                 tres_30y_2y_spread,tres_30y_1y_spread,tres_30y_6m_spread,
+                                 tres_30y_3m_spread,tres_30y_1m_spread,tres_20y_10y_spread,
+                                 tres_20y_5y_spread,tres_20y_2y_spread,tres_20y_1y_spread,
+                                 tres_20y_6m_spread,tres_20y_3m_spread,tres_20y_1m_spread,
+                                 tres_10y_5y_spread,tres_10y_2y_spread,tres_10y_1y_spread,
+                                 tres_10y_6m_spread,tres_10y_3m_spread,tres_10y_1m_spread,
+                                 tres_5y_2y_spread,tres_5y_1y_spread,tres_5y_6m_spread,
+                                 tres_5y_3m_spread,tres_5y_1m_spread,tres_2y_1y_spread,
+                                 tres_2y_6m_spread,tres_2y_3m_spread,tres_2y_1m_spread,
+                                 tres_1y_6m_spread,tres_1y_3m_spread,tres_1y_1m_spread,
+                                 tres_6m_3m_spread,tres_6m_1m_spread,tres_3m_1m_spread,
+                                 tres_30y,tres_20y,tres_10y,tres_5y,tres_2y,tres_1y,
+                                 tres_6m,tres_3m,tres_1m) %>%
+              mutate(time = time + 6) %>%
+              rename(tres_30y_20y_spread_lead_6m = tres_30y_20y_spread,
+                     tres_30y_10y_spread_lead_6m = tres_30y_10y_spread,
+                     tres_30y_5y_spread_lead_6m = tres_30y_5y_spread,
+                     tres_30y_2y_spread_lead_6m = tres_30y_2y_spread,
+                     tres_30y_1y_spread_lead_6m = tres_30y_1y_spread,
+                     tres_30y_6m_spread_lead_6m = tres_30y_6m_spread,
+                     tres_30y_3m_spread_lead_6m = tres_30y_3m_spread,
+                     tres_30y_1m_spread_lead_6m = tres_30y_1m_spread,
+                     tres_20y_10y_spread_lead_6m = tres_20y_10y_spread,
+                     tres_20y_5y_spread_lead_6m = tres_20y_5y_spread,
+                     tres_20y_2y_spread_lead_6m = tres_20y_2y_spread,
+                     tres_20y_1y_spread_lead_6m = tres_20y_1y_spread,
+                     tres_20y_6m_spread_lead_6m = tres_20y_6m_spread,
+                     tres_20y_3m_spread_lead_6m = tres_20y_3m_spread,
+                     tres_20y_1m_spread_lead_6m = tres_20y_1m_spread,
+                     tres_10y_5y_spread_lead_6m = tres_10y_5y_spread,
+                     tres_10y_2y_spread_lead_6m = tres_10y_2y_spread,
+                     tres_10y_1y_spread_lead_6m = tres_10y_1y_spread,
+                     tres_10y_6m_spread_lead_6m = tres_10y_6m_spread,
+                     tres_10y_3m_spread_lead_6m = tres_10y_3m_spread,
+                     tres_10y_1m_spread_lead_6m = tres_10y_1m_spread,
+                     tres_5y_2y_spread_lead_6m = tres_5y_2y_spread,
+                     tres_5y_1y_spread_lead_6m = tres_5y_1y_spread,
+                     tres_5y_6m_spread_lead_6m = tres_5y_6m_spread,
+                     tres_5y_3m_spread_lead_6m = tres_5y_3m_spread,
+                     tres_5y_1m_spread_lead_6m = tres_5y_1m_spread,
+                     tres_2y_1y_spread_lead_6m = tres_2y_1y_spread,
+                     tres_2y_6m_spread_lead_6m = tres_2y_6m_spread,
+                     tres_2y_3m_spread_lead_6m = tres_2y_3m_spread,
+                     tres_2y_1m_spread_lead_6m = tres_2y_1m_spread,
+                     tres_1y_6m_spread_lead_6m = tres_1y_6m_spread,
+                     tres_1y_3m_spread_lead_6m = tres_1y_3m_spread,
+                     tres_1y_1m_spread_lead_6m = tres_1y_1m_spread,
+                     tres_6m_3m_spread_lead_6m = tres_6m_3m_spread,
+                     tres_6m_1m_spread_lead_6m = tres_6m_1m_spread,
+                     tres_3m_1m_spread_lead_6m = tres_3m_1m_spread,
+                     tres_30y_lead6 = tres_30y, tres_20y_lead6 = tres_20y,
+                     tres_10y_lead6 = tres_10y, tres_5y_lead6 = tres_5y,
+                     tres_2y_lead6 = tres_2y, tres_1y_lead6 = tres_1y,
+                     tres_6m_lead6 = tres_6m, tres_3m_lead6 = tres_3m,
+                     tres_1m_lead6 = tres_1m),by="time") %>%
+  left_join(.,theData %>% select(time,tres_30y_20y_spread,tres_30y_10y_spread,tres_30y_5y_spread,
+                                 tres_30y_2y_spread,tres_30y_1y_spread,tres_30y_6m_spread,
+                                 tres_30y_3m_spread,tres_30y_1m_spread,tres_20y_10y_spread,
+                                 tres_20y_5y_spread,tres_20y_2y_spread,tres_20y_1y_spread,
+                                 tres_20y_6m_spread,tres_20y_3m_spread,tres_20y_1m_spread,
+                                 tres_10y_5y_spread,tres_10y_2y_spread,tres_10y_1y_spread,
+                                 tres_10y_6m_spread,tres_10y_3m_spread,tres_10y_1m_spread,
+                                 tres_5y_2y_spread,tres_5y_1y_spread,tres_5y_6m_spread,
+                                 tres_5y_3m_spread,tres_5y_1m_spread,tres_2y_1y_spread,
+                                 tres_2y_6m_spread,tres_2y_3m_spread,tres_2y_1m_spread,
+                                 tres_1y_6m_spread,tres_1y_3m_spread,tres_1y_1m_spread,
+                                 tres_6m_3m_spread,tres_6m_1m_spread,tres_3m_1m_spread,
+                                 tres_30y,tres_20y,tres_10y,tres_5y,tres_2y,tres_1y,
+                                 tres_6m,tres_3m,tres_1m) %>%
+              mutate(time = time + 12) %>%
+              rename(tres_30y_20y_spread_lead_12m = tres_30y_20y_spread,
+                     tres_30y_10y_spread_lead_12m = tres_30y_10y_spread,
+                     tres_30y_5y_spread_lead_12m = tres_30y_5y_spread,
+                     tres_30y_2y_spread_lead_12m = tres_30y_2y_spread,
+                     tres_30y_1y_spread_lead_12m = tres_30y_1y_spread,
+                     tres_30y_6m_spread_lead_12m = tres_30y_6m_spread,
+                     tres_30y_3m_spread_lead_12m = tres_30y_3m_spread,
+                     tres_30y_1m_spread_lead_12m = tres_30y_1m_spread,
+                     tres_20y_10y_spread_lead_12m = tres_20y_10y_spread,
+                     tres_20y_5y_spread_lead_12m = tres_20y_5y_spread,
+                     tres_20y_2y_spread_lead_12m = tres_20y_2y_spread,
+                     tres_20y_1y_spread_lead_12m = tres_20y_1y_spread,
+                     tres_20y_6m_spread_lead_12m = tres_20y_6m_spread,
+                     tres_20y_3m_spread_lead_12m = tres_20y_3m_spread,
+                     tres_20y_1m_spread_lead_12m = tres_20y_1m_spread,
+                     tres_10y_5y_spread_lead_12m = tres_10y_5y_spread,
+                     tres_10y_2y_spread_lead_12m = tres_10y_2y_spread,
+                     tres_10y_1y_spread_lead_12m = tres_10y_1y_spread,
+                     tres_10y_6m_spread_lead_12m = tres_10y_6m_spread,
+                     tres_10y_3m_spread_lead_12m = tres_10y_3m_spread,
+                     tres_10y_1m_spread_lead_12m = tres_10y_1m_spread,
+                     tres_5y_2y_spread_lead_12m = tres_5y_2y_spread,
+                     tres_5y_1y_spread_lead_12m = tres_5y_1y_spread,
+                     tres_5y_6m_spread_lead_12m = tres_5y_6m_spread,
+                     tres_5y_3m_spread_lead_12m = tres_5y_3m_spread,
+                     tres_5y_1m_spread_lead_12m = tres_5y_1m_spread,
+                     tres_2y_1y_spread_lead_12m = tres_2y_1y_spread,
+                     tres_2y_6m_spread_lead_12m = tres_2y_6m_spread,
+                     tres_2y_3m_spread_lead_12m = tres_2y_3m_spread,
+                     tres_2y_1m_spread_lead_12m = tres_2y_1m_spread,
+                     tres_1y_6m_spread_lead_12m = tres_1y_6m_spread,
+                     tres_1y_3m_spread_lead_12m = tres_1y_3m_spread,
+                     tres_1y_1m_spread_lead_12m = tres_1y_1m_spread,
+                     tres_6m_3m_spread_lead_12m = tres_6m_3m_spread,
+                     tres_6m_1m_spread_lead_12m = tres_6m_1m_spread,
+                     tres_3m_1m_spread_lead_12m = tres_3m_1m_spread,
+                     tres_30y_lead12 = tres_30y, tres_20y_lead12 = tres_20y,
+                     tres_10y_lead12 = tres_10y, tres_5y_lead12 = tres_5y,
+                     tres_2y_lead12 = tres_2y, tres_1y_lead12 = tres_1y,
+                     tres_6m_lead12 = tres_6m, tres_3m_lead12 = tres_3m,
+                     tres_1m_lead12 = tres_1m),by="time") %>%
+  left_join(.,theData %>% select(time,tres_30y_20y_spread,tres_30y_10y_spread,tres_30y_5y_spread,
+                                 tres_30y_2y_spread,tres_30y_1y_spread,tres_30y_6m_spread,
+                                 tres_30y_3m_spread,tres_30y_1m_spread,tres_20y_10y_spread,
+                                 tres_20y_5y_spread,tres_20y_2y_spread,tres_20y_1y_spread,
+                                 tres_20y_6m_spread,tres_20y_3m_spread,tres_20y_1m_spread,
+                                 tres_10y_5y_spread,tres_10y_2y_spread,tres_10y_1y_spread,
+                                 tres_10y_6m_spread,tres_10y_3m_spread,tres_10y_1m_spread,
+                                 tres_5y_2y_spread,tres_5y_1y_spread,tres_5y_6m_spread,
+                                 tres_5y_3m_spread,tres_5y_1m_spread,tres_2y_1y_spread,
+                                 tres_2y_6m_spread,tres_2y_3m_spread,tres_2y_1m_spread,
+                                 tres_1y_6m_spread,tres_1y_3m_spread,tres_1y_1m_spread,
+                                 tres_6m_3m_spread,tres_6m_1m_spread,tres_3m_1m_spread,
+                                 tres_30y,tres_20y,tres_10y,tres_5y,tres_2y,tres_1y,
+                                 tres_6m,tres_3m,tres_1m) %>%
+              mutate(time = time + 18) %>%
+              rename(tres_30y_20y_spread_lead_18m = tres_30y_20y_spread,
+                     tres_30y_10y_spread_lead_18m = tres_30y_10y_spread,
+                     tres_30y_5y_spread_lead_18m = tres_30y_5y_spread,
+                     tres_30y_2y_spread_lead_18m = tres_30y_2y_spread,
+                     tres_30y_1y_spread_lead_18m = tres_30y_1y_spread,
+                     tres_30y_6m_spread_lead_18m = tres_30y_6m_spread,
+                     tres_30y_3m_spread_lead_18m = tres_30y_3m_spread,
+                     tres_30y_1m_spread_lead_18m = tres_30y_1m_spread,
+                     tres_20y_10y_spread_lead_18m = tres_20y_10y_spread,
+                     tres_20y_5y_spread_lead_18m = tres_20y_5y_spread,
+                     tres_20y_2y_spread_lead_18m = tres_20y_2y_spread,
+                     tres_20y_1y_spread_lead_18m = tres_20y_1y_spread,
+                     tres_20y_6m_spread_lead_18m = tres_20y_6m_spread,
+                     tres_20y_3m_spread_lead_18m = tres_20y_3m_spread,
+                     tres_20y_1m_spread_lead_18m = tres_20y_1m_spread,
+                     tres_10y_5y_spread_lead_18m = tres_10y_5y_spread,
+                     tres_10y_2y_spread_lead_18m = tres_10y_2y_spread,
+                     tres_10y_1y_spread_lead_18m = tres_10y_1y_spread,
+                     tres_10y_6m_spread_lead_18m = tres_10y_6m_spread,
+                     tres_10y_3m_spread_lead_18m = tres_10y_3m_spread,
+                     tres_10y_1m_spread_lead_18m = tres_10y_1m_spread,
+                     tres_5y_2y_spread_lead_18m = tres_5y_2y_spread,
+                     tres_5y_1y_spread_lead_18m = tres_5y_1y_spread,
+                     tres_5y_6m_spread_lead_18m = tres_5y_6m_spread,
+                     tres_5y_3m_spread_lead_18m = tres_5y_3m_spread,
+                     tres_5y_1m_spread_lead_18m = tres_5y_1m_spread,
+                     tres_2y_1y_spread_lead_18m = tres_2y_1y_spread,
+                     tres_2y_6m_spread_lead_18m = tres_2y_6m_spread,
+                     tres_2y_3m_spread_lead_18m = tres_2y_3m_spread,
+                     tres_2y_1m_spread_lead_18m = tres_2y_1m_spread,
+                     tres_1y_6m_spread_lead_18m = tres_1y_6m_spread,
+                     tres_1y_3m_spread_lead_18m = tres_1y_3m_spread,
+                     tres_1y_1m_spread_lead_18m = tres_1y_1m_spread,
+                     tres_6m_3m_spread_lead_18m = tres_6m_3m_spread,
+                     tres_6m_1m_spread_lead_18m = tres_6m_1m_spread,
+                     tres_3m_1m_spread_lead_18m = tres_3m_1m_spread,
+                     tres_30y_lead18 = tres_30y, tres_20y_lead18 = tres_20y,
+                     tres_10y_lead18 = tres_10y, tres_5y_lead18 = tres_5y,
+                     tres_2y_lead18 = tres_2y, tres_1y_lead18 = tres_1y,
+                     tres_6m_lead18 = tres_6m, tres_3m_lead18 = tres_3m,
+                     tres_1m_lead18 = tres_1m),by="time") %>%
+  left_join(.,theData %>% select(time,tres_30y_20y_spread,tres_30y_10y_spread,tres_30y_5y_spread,
+                                 tres_30y_2y_spread,tres_30y_1y_spread,tres_30y_6m_spread,
+                                 tres_30y_3m_spread,tres_30y_1m_spread,tres_20y_10y_spread,
+                                 tres_20y_5y_spread,tres_20y_2y_spread,tres_20y_1y_spread,
+                                 tres_20y_6m_spread,tres_20y_3m_spread,tres_20y_1m_spread,
+                                 tres_10y_5y_spread,tres_10y_2y_spread,tres_10y_1y_spread,
+                                 tres_10y_6m_spread,tres_10y_3m_spread,tres_10y_1m_spread,
+                                 tres_5y_2y_spread,tres_5y_1y_spread,tres_5y_6m_spread,
+                                 tres_5y_3m_spread,tres_5y_1m_spread,tres_2y_1y_spread,
+                                 tres_2y_6m_spread,tres_2y_3m_spread,tres_2y_1m_spread,
+                                 tres_1y_6m_spread,tres_1y_3m_spread,tres_1y_1m_spread,
+                                 tres_6m_3m_spread,tres_6m_1m_spread,tres_3m_1m_spread,
+                                 tres_30y,tres_20y,tres_10y,tres_5y,tres_2y,tres_1y,
+                                 tres_6m,tres_3m,tres_1m) %>%
+              mutate(time = time + 24) %>%
+              rename(tres_30y_20y_spread_lead_24m = tres_30y_20y_spread,
+                     tres_30y_10y_spread_lead_24m = tres_30y_10y_spread,
+                     tres_30y_5y_spread_lead_24m = tres_30y_5y_spread,
+                     tres_30y_2y_spread_lead_24m = tres_30y_2y_spread,
+                     tres_30y_1y_spread_lead_24m = tres_30y_1y_spread,
+                     tres_30y_6m_spread_lead_24m = tres_30y_6m_spread,
+                     tres_30y_3m_spread_lead_24m = tres_30y_3m_spread,
+                     tres_30y_1m_spread_lead_24m = tres_30y_1m_spread,
+                     tres_20y_10y_spread_lead_24m = tres_20y_10y_spread,
+                     tres_20y_5y_spread_lead_24m = tres_20y_5y_spread,
+                     tres_20y_2y_spread_lead_24m = tres_20y_2y_spread,
+                     tres_20y_1y_spread_lead_24m = tres_20y_1y_spread,
+                     tres_20y_6m_spread_lead_24m = tres_20y_6m_spread,
+                     tres_20y_3m_spread_lead_24m = tres_20y_3m_spread,
+                     tres_20y_1m_spread_lead_24m = tres_20y_1m_spread,
+                     tres_10y_5y_spread_lead_24m = tres_10y_5y_spread,
+                     tres_10y_2y_spread_lead_24m = tres_10y_2y_spread,
+                     tres_10y_1y_spread_lead_24m = tres_10y_1y_spread,
+                     tres_10y_6m_spread_lead_24m = tres_10y_6m_spread,
+                     tres_10y_3m_spread_lead_24m = tres_10y_3m_spread,
+                     tres_10y_1m_spread_lead_24m = tres_10y_1m_spread,
+                     tres_5y_2y_spread_lead_24m = tres_5y_2y_spread,
+                     tres_5y_1y_spread_lead_24m = tres_5y_1y_spread,
+                     tres_5y_6m_spread_lead_24m = tres_5y_6m_spread,
+                     tres_5y_3m_spread_lead_24m = tres_5y_3m_spread,
+                     tres_5y_1m_spread_lead_24m = tres_5y_1m_spread,
+                     tres_2y_1y_spread_lead_24m = tres_2y_1y_spread,
+                     tres_2y_6m_spread_lead_24m = tres_2y_6m_spread,
+                     tres_2y_3m_spread_lead_24m = tres_2y_3m_spread,
+                     tres_2y_1m_spread_lead_24m = tres_2y_1m_spread,
+                     tres_1y_6m_spread_lead_24m = tres_1y_6m_spread,
+                     tres_1y_3m_spread_lead_24m = tres_1y_3m_spread,
+                     tres_1y_1m_spread_lead_24m = tres_1y_1m_spread,
+                     tres_6m_3m_spread_lead_24m = tres_6m_3m_spread,
+                     tres_6m_1m_spread_lead_24m = tres_6m_1m_spread,
+                     tres_3m_1m_spread_lead_24m = tres_3m_1m_spread,
+                     tres_30y_lead24 = tres_30y, tres_20y_lead24 = tres_20y,
+                     tres_10y_lead24 = tres_10y, tres_5y_lead24 = tres_5y,
+                     tres_2y_lead24 = tres_2y, tres_1y_lead24 = tres_1y,
+                     tres_6m_lead24 = tres_6m, tres_3m_lead24 = tres_3m,
+                     tres_1m_lead24 = tres_1m),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,sentiment) %>% 
+              mutate(time = time + 3) %>% 
+              rename(sentiment3 = sentiment),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,sentiment) %>% 
+              mutate(time = time + 6) %>% 
+              rename(sentiment6 = sentiment),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,sentiment) %>% 
+              mutate(time = time + 12) %>% 
+              rename(sentiment12 = sentiment),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,lfpr) %>% 
+              mutate(time = time + 3) %>% 
+              rename(lfpr3 = lfpr),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,lfpr) %>% 
+              mutate(time = time + 6) %>% 
+              rename(lfpr6 = lfpr),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,lfpr) %>% 
+              mutate(time = time + 12) %>% 
+              rename(lfpr12 = lfpr),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,production) %>% 
+              mutate(time = time + 3) %>% 
+              rename(production3 = production),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,production) %>% 
+              mutate(time = time + 6) %>% 
+              rename(production6 = production),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,production) %>% 
+              mutate(time = time + 12) %>% 
+              rename(production12 = production),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,fed_funds) %>% 
+              mutate(time = time + 3) %>% 
+              rename(fed_funds3 = fed_funds),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,fed_funds) %>% 
+              mutate(time = time + 6) %>% 
+              rename(fed_funds6 = fed_funds),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,fed_funds) %>% 
+              mutate(time = time + 12) %>% 
+              rename(fed_funds12 = fed_funds),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,m2_velocity) %>% 
+              mutate(time = time + 3) %>% 
+              rename(m2_velocity3 = m2_velocity),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,m2_velocity) %>% 
+              mutate(time = time + 6) %>% 
+              rename(m2_velocity6 = m2_velocity),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,m2_velocity) %>% 
+              mutate(time = time + 12) %>% 
+              rename(m2_velocity12 = m2_velocity),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,initial_claims) %>% 
+              mutate(time = time + 3) %>% 
+              rename(initial_claims3 = initial_claims),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,initial_claims) %>% 
+              mutate(time = time + 6) %>% 
+              rename(initial_claims6 = initial_claims),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,initial_claims) %>% 
+              mutate(time = time + 12) %>% 
+              rename(initial_claims12 = initial_claims),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,leverage_index) %>% 
+              mutate(time = time + 3) %>% 
+              rename(leverage_index3 = leverage_index),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,leverage_index) %>% 
+              mutate(time = time + 6) %>% 
+              rename(leverage_index6 = leverage_index),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,leverage_index) %>% 
+              mutate(time = time + 12) %>% 
+              rename(leverage_index12 = leverage_index),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,credit_index) %>% 
+              mutate(time = time + 3) %>% 
+              rename(credit_index3 = credit_index),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,credit_index) %>% 
+              mutate(time = time + 6) %>% 
+              rename(credit_index6 = credit_index),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,credit_index) %>% 
+              mutate(time = time + 12) %>% 
+              rename(credit_index12 = credit_index),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,risk_index) %>% 
+              mutate(time = time + 3) %>% 
+              rename(risk_index3 = risk_index),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,risk_index) %>% 
+              mutate(time = time + 6) %>% 
+              rename(risk_index6 = risk_index),by="time") %>%
+  left_join(.,theData %>% 
+              select(time,risk_index) %>% 
+              mutate(time = time + 12) %>% 
+              rename(risk_index12 = risk_index),by="time") %>%
+  mutate(unemployment_raw_chg_3 = unemployment - unemployment3,
+         unemployment_prct_chg_3 = (unemployment - unemployment3)/unemployment3,
+         unemployment_raw_chg_6 = unemployment - unemployment6,
+         unemployment_prct_chg_6 = (unemployment - unemployment6)/unemployment6,
+         unemployment_raw_chg_12 = unemployment - unemployment12,
+         unemployment_prct_chg_12 = (unemployment - unemployment12)/unemployment12,
+         tres_30y_raw_chg_3 = tres_30y - tres_30y_lead3,
+         tres_30y_prct_chg_3 = (tres_30y - tres_30y_lead3)/tres_30y_lead3,
+         tres_30y_raw_chg_6 = tres_30y - tres_30y_lead6,
+         tres_30y_prct_chg_6 = (tres_30y - tres_30y_lead6)/tres_30y_lead6,
+         tres_30y_raw_chg_12 = tres_30y - tres_30y_lead12,
+         tres_30y_prct_chg_12 = (tres_30y - tres_30y_lead12)/tres_30y_lead12,
+         tres_30y_raw_chg_18 = tres_30y - tres_30y_lead18,
+         tres_30y_prct_chg_18 = (tres_30y - tres_30y_lead18)/tres_30y_lead18,
+         tres_30y_raw_chg_24 = tres_30y - tres_30y_lead24,
+         tres_30y_prct_chg_24 = (tres_30y - tres_30y_lead24)/tres_30y_lead24,
+         tres_20y_raw_chg_3 = tres_20y - tres_20y_lead3,
+         tres_20y_prct_chg_3 = (tres_20y - tres_20y_lead3)/tres_20y_lead3,
+         tres_20y_raw_chg_6 = tres_20y - tres_20y_lead6,
+         tres_20y_prct_chg_6 = (tres_20y - tres_20y_lead6)/tres_20y_lead6,
+         tres_20y_raw_chg_12 = tres_20y - tres_20y_lead12,
+         tres_20y_prct_chg_12 = (tres_20y - tres_20y_lead12)/tres_20y_lead12,
+         tres_20y_raw_chg_18 = tres_20y - tres_20y_lead18,
+         tres_20y_prct_chg_18 = (tres_20y - tres_20y_lead18)/tres_20y_lead18,
+         tres_20y_raw_chg_24 = tres_20y - tres_20y_lead24,
+         tres_20y_prct_chg_24 = (tres_20y - tres_20y_lead24)/tres_20y_lead24,
+         tres_10y_raw_chg_3 = tres_10y - tres_10y_lead3,
+         tres_10y_prct_chg_3 = (tres_10y - tres_10y_lead3)/tres_10y_lead3,
+         tres_10y_raw_chg_6 = tres_10y - tres_10y_lead6,
+         tres_10y_prct_chg_6 = (tres_10y - tres_10y_lead6)/tres_10y_lead6,
+         tres_10y_raw_chg_12 = tres_10y - tres_10y_lead12,
+         tres_10y_prct_chg_12 = (tres_10y - tres_10y_lead12)/tres_10y_lead12,
+         tres_10y_raw_chg_18 = tres_10y - tres_10y_lead18,
+         tres_10y_prct_chg_18 = (tres_10y - tres_10y_lead18)/tres_10y_lead18,
+         tres_10y_raw_chg_24 = tres_10y - tres_10y_lead24,
+         tres_10y_prct_chg_24 = (tres_10y - tres_10y_lead24)/tres_10y_lead24,
+         tres_5y_raw_chg_3 = tres_5y - tres_5y_lead3,
+         tres_5y_prct_chg_3 = (tres_5y - tres_5y_lead3)/tres_5y_lead3,
+         tres_5y_raw_chg_6 = tres_5y - tres_5y_lead6,
+         tres_5y_prct_chg_6 = (tres_5y - tres_5y_lead6)/tres_5y_lead6,
+         tres_5y_raw_chg_12 = tres_5y - tres_5y_lead12,
+         tres_5y_prct_chg_12 = (tres_5y - tres_5y_lead12)/tres_5y_lead12,
+         tres_5y_raw_chg_18 = tres_5y - tres_5y_lead18,
+         tres_5y_prct_chg_18 = (tres_5y - tres_5y_lead18)/tres_5y_lead18,
+         tres_5y_raw_chg_24 = tres_5y - tres_5y_lead24,
+         tres_5y_prct_chg_24 = (tres_5y - tres_5y_lead24)/tres_5y_lead24,
+         tres_2y_raw_chg_3 = tres_2y - tres_2y_lead3,
+         tres_2y_prct_chg_3 = (tres_2y - tres_2y_lead3)/tres_2y_lead3,
+         tres_2y_raw_chg_6 = tres_2y - tres_2y_lead6,
+         tres_2y_prct_chg_6 = (tres_2y - tres_2y_lead6)/tres_2y_lead6,
+         tres_2y_raw_chg_12 = tres_2y - tres_2y_lead12,
+         tres_2y_prct_chg_12 = (tres_2y - tres_2y_lead12)/tres_2y_lead12,
+         tres_2y_raw_chg_18 = tres_2y - tres_2y_lead18,
+         tres_2y_prct_chg_18 = (tres_2y - tres_2y_lead18)/tres_2y_lead18,
+         tres_2y_raw_chg_24 = tres_2y - tres_2y_lead24,
+         tres_2y_prct_chg_24 = (tres_2y - tres_2y_lead24)/tres_2y_lead24,
+         tres_1y_raw_chg_3 = tres_1y - tres_1y_lead3,
+         tres_1y_prct_chg_3 = (tres_1y - tres_1y_lead3)/tres_1y_lead3,
+         tres_1y_raw_chg_6 = tres_1y - tres_1y_lead6,
+         tres_1y_prct_chg_6 = (tres_1y - tres_1y_lead6)/tres_1y_lead6,
+         tres_1y_raw_chg_12 = tres_1y - tres_1y_lead12,
+         tres_1y_prct_chg_12 = (tres_1y - tres_1y_lead12)/tres_1y_lead12,
+         tres_1y_raw_chg_18 = tres_1y - tres_1y_lead18,
+         tres_1y_prct_chg_18 = (tres_1y - tres_1y_lead18)/tres_1y_lead18,
+         tres_1y_raw_chg_24 = tres_1y - tres_1y_lead24,
+         tres_1y_prct_chg_24 = (tres_1y - tres_1y_lead24)/tres_1y_lead24,
+         tres_6m_raw_chg_3 = tres_6m - tres_6m_lead3,
+         tres_6m_prct_chg_3 = (tres_6m - tres_6m_lead3)/tres_6m_lead3,
+         tres_6m_raw_chg_6 = tres_6m - tres_6m_lead6,
+         tres_6m_prct_chg_6 = (tres_6m - tres_6m_lead6)/tres_6m_lead6,
+         tres_6m_raw_chg_12 = tres_6m - tres_6m_lead12,
+         tres_6m_prct_chg_12 = (tres_6m - tres_6m_lead12)/tres_6m_lead12,
+         tres_6m_raw_chg_18 = tres_6m - tres_6m_lead18,
+         tres_6m_prct_chg_18 = (tres_6m - tres_6m_lead18)/tres_6m_lead18,
+         tres_6m_raw_chg_24 = tres_6m - tres_6m_lead24,
+         tres_6m_prct_chg_24 = (tres_6m - tres_6m_lead24)/tres_6m_lead24,
+         tres_3m_raw_chg_3 = tres_3m - tres_3m_lead3,
+         tres_3m_prct_chg_3 = (tres_3m - tres_3m_lead3)/tres_3m_lead3,
+         tres_3m_raw_chg_6 = tres_3m - tres_3m_lead6,
+         tres_3m_prct_chg_6 = (tres_3m - tres_3m_lead6)/tres_3m_lead6,
+         tres_3m_raw_chg_12 = tres_3m - tres_3m_lead12,
+         tres_3m_prct_chg_12 = (tres_3m - tres_3m_lead12)/tres_3m_lead12,
+         tres_3m_raw_chg_18 = tres_3m - tres_3m_lead18,
+         tres_3m_prct_chg_18 = (tres_3m - tres_3m_lead18)/tres_3m_lead18,
+         tres_3m_raw_chg_24 = tres_3m - tres_3m_lead24,
+         tres_3m_prct_chg_24 = (tres_3m - tres_3m_lead24)/tres_3m_lead24,
+         tres_1m_raw_chg_3 = tres_1m - tres_1m_lead3,
+         tres_1m_prct_chg_3 = (tres_1m - tres_1m_lead3)/tres_1m_lead3,
+         tres_1m_raw_chg_6 = tres_1m - tres_1m_lead6,
+         tres_1m_prct_chg_6 = (tres_1m - tres_1m_lead6)/tres_1m_lead6,
+         tres_1m_raw_chg_12 = tres_1m - tres_1m_lead12,
+         tres_1m_prct_chg_12 = (tres_1m - tres_1m_lead12)/tres_1m_lead12,
+         tres_1m_raw_chg_18 = tres_1m - tres_1m_lead18,
+         tres_1m_prct_chg_18 = (tres_1m - tres_1m_lead18)/tres_1m_lead18,
+         tres_1m_raw_chg_24 = tres_1m - tres_1m_lead24,
+         tres_1m_prct_chg_24 = (tres_1m - tres_1m_lead24)/tres_1m_lead24,
+         sentiment_raw_chg_3 = sentiment - sentiment3,
+         sentiment_prct_chg_3 = (sentiment - sentiment3)/sentiment3,
+         sentiment_raw_chg_6 = sentiment - sentiment6,
+         sentiment_prct_chg_6 = (sentiment - sentiment6)/sentiment6,
+         sentiment_raw_chg_12 = sentiment - sentiment12,
+         sentiment_prct_chg_12 = (sentiment - sentiment12)/sentiment12,
+         lfpr_raw_chg_3 = lfpr - lfpr3,
+         lfpr_prct_chg_3 = (lfpr - lfpr3)/lfpr3,
+         lfpr_raw_chg_6 = lfpr - lfpr6,
+         lfpr_prct_chg_6 = (lfpr - lfpr6)/lfpr6,
+         lfpr_raw_chg_12 = lfpr - lfpr12,
+         lfpr_prct_chg_12 = (lfpr - lfpr12)/lfpr12,
+         production_raw_chg_3 = production - production3,
+         production_prct_chg_3 = (production - production3)/production3,
+         production_raw_chg_6 = production - production6,
+         production_prct_chg_6 = (production - production6)/production6,
+         production_raw_chg_12 = production - production12,
+         production_prct_chg_12 = (production - production12)/production12,
+         fed_funds_raw_chg_3 = fed_funds - fed_funds3,
+         fed_funds_prct_chg_3 = (fed_funds - fed_funds3)/fed_funds3,
+         fed_funds_raw_chg_6 = fed_funds - fed_funds6,
+         fed_funds_prct_chg_6 = (fed_funds - fed_funds6)/fed_funds6,
+         fed_funds_raw_chg_12 = fed_funds - fed_funds12,
+         fed_funds_prct_chg_12 = (fed_funds - fed_funds12)/fed_funds12,
+         m2_velocity_raw_chg_3 = m2_velocity - m2_velocity3,
+         m2_velocity_prct_chg_3 = (m2_velocity - m2_velocity3)/m2_velocity3,
+         m2_velocity_raw_chg_6 = m2_velocity - m2_velocity6,
+         m2_velocity_prct_chg_6 = (m2_velocity - m2_velocity6)/m2_velocity6,
+         m2_velocity_raw_chg_12 = m2_velocity - m2_velocity12,
+         m2_velocity_prct_chg_12 = (m2_velocity - m2_velocity12)/m2_velocity12,
+         initial_claims_raw_chg_3 = initial_claims - initial_claims3,
+         initial_claims_prct_chg_3 = (initial_claims - initial_claims3)/initial_claims3,
+         initial_claims_raw_chg_6 = initial_claims - initial_claims6,
+         initial_claims_prct_chg_6 = (initial_claims - initial_claims6)/initial_claims6,
+         initial_claims_raw_chg_12 = initial_claims - initial_claims12,
+         initial_claims_prct_chg_12 = (initial_claims - initial_claims12)/initial_claims12,
+         leverage_index_raw_chg_3 = leverage_index - leverage_index3,
+         leverage_index_prct_chg_3 = (leverage_index - leverage_index3)/leverage_index3,
+         leverage_index_raw_chg_6 = leverage_index - leverage_index6,
+         leverage_index_prct_chg_6 = (leverage_index - leverage_index6)/leverage_index6,
+         leverage_index_raw_chg_12 = leverage_index - leverage_index12,
+         leverage_index_prct_chg_12 = (leverage_index - leverage_index12)/leverage_index12,
+         credit_index_raw_chg_3 = credit_index - credit_index3,
+         credit_index_prct_chg_3 = (credit_index - credit_index3)/credit_index3,
+         credit_index_raw_chg_6 = credit_index - credit_index6,
+         credit_index_prct_chg_6 = (credit_index - credit_index6)/credit_index6,
+         credit_index_raw_chg_12 = credit_index - credit_index12,
+         credit_index_prct_chg_12 = (credit_index - credit_index12)/credit_index12,
+         risk_index_raw_chg_3 = risk_index - risk_index3,
+         risk_index_prct_chg_3 = (risk_index - risk_index3)/risk_index3,
+         risk_index_raw_chg_6 = risk_index - risk_index6,
+         risk_index_prct_chg_6 = (risk_index - risk_index6)/risk_index6,
+         risk_index_raw_chg_12 = risk_index - risk_index12,
+         risk_index_prct_chg_12 = (risk_index - risk_index12)/risk_index12) %>%
+  select(-c("unemployment3","unemployment6","unemployment12",
+            "tres_30y_lead3","tres_30y_lead6","tres_30y_lead12","tres_30y_lead18","tres_30y_lead24",
+            "tres_20y_lead3","tres_20y_lead6","tres_20y_lead12","tres_20y_lead18","tres_20y_lead24",
+            "tres_10y_lead3","tres_10y_lead6","tres_10y_lead12","tres_10y_lead18","tres_10y_lead24",
+            "tres_5y_lead3","tres_5y_lead6","tres_5y_lead12","tres_5y_lead18","tres_5y_lead24",
+            "tres_2y_lead3","tres_2y_lead6","tres_2y_lead12","tres_2y_lead18","tres_2y_lead24",
+            "tres_1y_lead3","tres_1y_lead6","tres_1y_lead12","tres_1y_lead18","tres_1y_lead24",
+            "tres_6m_lead3","tres_6m_lead6","tres_6m_lead12","tres_6m_lead18","tres_6m_lead24",
+            "tres_3m_lead3","tres_3m_lead6","tres_3m_lead12","tres_3m_lead18","tres_3m_lead24",
+            "tres_1m_lead3","tres_1m_lead6","tres_1m_lead12","tres_1m_lead18","tres_1m_lead24",
+            "sentiment3","sentiment6","sentiment12",
+            "lfpr3","lfpr6","lfpr12",
+            "production3","production6","production12",
+            "fed_funds3","fed_funds6","fed_funds12",
+            "m2_velocity3","m2_velocity6","m2_velocity12",
+            "initial_claims3","initial_claims6","initial_claims12",
+            "leverage_index3","leverage_index6","leverage_index12",
+            "credit_index3","credit_index6","credit_index12",
+            "risk_index3","risk_index6","risk_index12")) %>%
+  left_join(.,recession_3m,by="time") %>%
+  left_join(.,recession_6m,by="time") %>%
+  left_join(.,recession_12m,by="time") %>%
+  left_join(.,recession_18m,by="time") %>%
+  filter(time >= 78) #Start data in June 1976 when 2-year treasury data starts
 
 #Build current... take most recent values populated as inputs
 current_test = as.data.frame(cbind(as.character(Sys.Date()),as.numeric(unemployment[dim(unemployment)[1],"unemployment"]),
@@ -985,7 +1047,7 @@ test_current = as.h2o(current_test)
 model_c =  h2o.gbm(x=x_vars,
                    y=y1,
                    fold_column = "folds",
-                   training_frame = train_data_6,
+                   training_frame = train_data_c,
                    col_sample_rate = 0.8,
                    min_split_improvement = 0.01,
                    learn_rate = 0.1,
@@ -1026,7 +1088,7 @@ recession_pred_c_current = as.vector(h2o.predict(model_c,test_current))
 model_3 =  h2o.gbm(x=x_vars,
                    y=y2,
                    fold_column = "folds",
-                   training_frame = train_data_6,
+                   training_frame = train_data_3,
                    col_sample_rate = 1.0,
                    min_split_improvement = 0.0001,
                    learn_rate = 0.1,
@@ -1228,9 +1290,22 @@ write.csv(current_inputs,"Data/Recession Probability/Backup/recession_inputs.csv
 current_inputs = rbind(current_inputs,current_test)
 current_pred = rbind(current_pred,current_temp)
 
+#create view of change in predictions
+rec_pred_chg = as.data.frame(cbind(c("Currently Recession","Recession within 12 Months"),
+                                   c(current_pred[dim(current_pred)[1],"recession_pred_c"],current_pred[dim(current_pred)[1],"recession_pred_12"]),
+                                   c(current_pred[dim(current_pred)[1]-4,"recession_pred_c"],current_pred[dim(current_pred)[1]-4,"recession_pred_12"]),
+                                   c(current_pred[dim(current_pred)[1]-13,"recession_pred_c"],current_pred[dim(current_pred)[1]-13,"recession_pred_12"])))
+colnames(rec_pred_chg) = c("Name","Current","Month Prior","Quarter Prior")
+rec_pred_chg$Current = as.numeric(rec_pred_chg$Current)
+rec_pred_chg$`Month Prior` = as.numeric(rec_pred_chg$`Month Prior`)
+rec_pred_chg$`Quarter Prior` = as.numeric(rec_pred_chg$`Quarter Prior`)
+rec_pred_chg$`Change from Month Prior` = rec_pred_chg$Current - rec_pred_chg$`Month Prior`
+rec_pred_chg$`Change from Quarter Prior` = rec_pred_chg$Current - rec_pred_chg$`Quarter Prior`
+
 #write out new stacked files
 write.csv(current_pred,"Data/Recession Probability/recession_prediction.csv",row.names=F)
 write.csv(current_inputs,"Data/Recession Probability/recession_inputs.csv",row.names=F)
+write.csv(rec_pred_chg,"Data/Recession Probability/recession_prediction_changes.csv",row.names=F)
 
 
 # temp = theData %>% select(date,time,recession) 
